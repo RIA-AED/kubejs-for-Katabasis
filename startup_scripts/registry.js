@@ -3,13 +3,13 @@ StartupEvents.registry('block', event => {
         // 碰撞箱：水平 3x3（-16到32像素，即-1格到+2格），高度1格（0到16像素）
         // 这样视觉上占据3x3空间，但注意实体可以穿过（见下方noCollision）
         .box(-16, 0, -16, 32, 16, 32)
-        
+
         // 无实体碰撞：玩家、怪物、掉落物等可以直接穿过，不会推动或被阻挡
         .noCollision()
-        
+
         // 透明材质渲染（支持alpha通道，类似玻璃/树叶）
         .defaultCutout()
-        
+
         // 基础属性（可选，根据需求调整）
         .material('metal')           // 金属材质（挖掘声音）
         .hardness(3)                // 硬度
@@ -37,6 +37,10 @@ StartupEvents.registry('entity_type', event => {
             event.addTriggerableAnimation('landing', 'landing', 'play_once')
             event.addTriggerableAnimation('break', 'break', 'play_once')
 
+            if (event.entity.persistentData.getString('state') == 'landing')
+                event.thenPlayAndHold("landing")
+            if (event.entity.persistentData.getString('state') == 'break')
+                event.thenPlayAndHold("break")
             return true
         })
 
@@ -61,13 +65,6 @@ StartupEvents.registry('entity_type', event => {
         .isPushable(false)                   // 不可被其他实体推动
         //.isAttackable(false)                 // 不可被攻击（可选，避免被射爆）
         .canBreatheUnderwater(true)          // 防止溺水伤害
-
-        // 伤害免疫（关键：自由落体阶段不免疫摔落伤害）
-        .isInvulnerableTo(context => {
-            if (context.damageSource.getType() != 'fall')
-                return true
-            return false
-        })
 
         .tick(entity => {
             if (entity.isVehicle()) {
