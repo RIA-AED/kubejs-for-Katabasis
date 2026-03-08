@@ -10,8 +10,8 @@ BlockEvents.rightClicked("kubejs:drop_controller", event => {
 
         let entity = event.level.createEntity("kubejs:landing_pod")
         entity.setPos(pos.x(), pos.y(), pos.z())
+        entity.mergeNbt("{CustomNameVisible:0b}")
         entity.spawn()
-        entity.
         event.player.startRiding(entity, true)
         entity.potionEffects.add("minecraft:resistance", 1000, 4, true, false)
 
@@ -22,14 +22,93 @@ BlockEvents.rightClicked("kubejs:drop_controller", event => {
 
 EntityEvents.hurt("kubejs:landing_pod", event => {
     if (event.source.getType() != "fall") return
-    event.entity.persistentData.putString('state', 'break')
-    event.entity.triggerAnimation('main', 'break')  // 触发刷新，控制器会重新评估并执行 
-    event.entity.getPassengers().forEach(it => {
-        it.unRide()
-    })
-    event.server.scheduleInTicks(40, function (callback) {
-        event.entity.tags.add("dead")
-        event.server.runCommandSilent("execute as @e[tag=dead] at @s run tp @s ~ -200 ~")
-    })
+
     event.cancel()
 })
+
+EntityEvents.spawned("kubejs:landing_pod", event => {
+    landingPodTick(event.entity, event.level, event.server)
+})
+
+/** 
+ * 降落仓tick函数
+ * @param {Internal.LivingEntity} entity
+ * @param {Internal.Level} level
+ * @param {Internal.MinecraftServer} server
+*/
+function landingPodTick(entity, level, server) {
+    server.scheduleInTicks(1, function (callback) {
+        if (!entity) return
+        if (!entity.persistentData.contains("isFinalFalling")) {
+            entity.persistentData.isFinalFalling = false
+        }
+        if (entity.persistentData.isFinalFalling == false) {
+            try {
+                for (let offset = 1; offset <= 20; offset++) {
+                    if (entity.block.offset(0, -offset, 0) != "minecraft:air") {
+                        entity.persistentData.isFinalFalling = true
+                        entity.persistentData.putString('state', 'landing')
+                        entity.triggerAnimation('main', 'landing')
+                        entity.potionEffects.add("minecraft:slow_falling", 1000, 2, true, false)
+                        server.runCommandSilent(`playsound createbigcannons:lava_fluid_release ambient @a ${entity.x} ${entity.y} ${entity.z} 1 0.7 1`)
+                        break
+                    }
+                }
+            } catch (e) {
+                server.tell(e)
+            }
+
+        } else {
+            let maxM = 0.2
+
+            let clampedX = Math.max(-maxM, Math.min(maxM, entity.motionX))
+            let clampedZ = Math.max(-maxM, Math.min(maxM, entity.motionZ))
+
+            entity.setMotion(clampedX, -0.3, clampedZ)
+
+            level.spawnParticles(
+                'createbigcannons:smoke',
+                true,
+                entity.x, entity.y - 2, entity.z,
+                0.3, 0, 0.3,
+                3, 0.05
+            )
+            level.spawnParticles(
+                'minecraft:campfire_cosy_smoke',
+                true,
+                entity.x, entity.y - 2, entity.z,
+                0.3, 0, 0.3,
+                3, 0.05
+            )
+
+
+            if (entity.onGround()) {
+                entity.persistentData.putString('state', 'break')
+                entity.mergeNbt("{CustomNameVisible:0b}")
+                entity.setCustomNameVisible(false)
+                entity.setCustomName("")
+                entity.triggerAnimation('main', 'break')  // 触发刷新，控制器会重新评估并执行 
+                entity.getPassengers().forEach(it => {
+                    it.unRide()
+                })
+                let explosion = entity.block.createExplosion()
+                level.spawnParticles(
+                    'createbigcannons:fluid_cloud',
+                    true,
+                    entity.x, entity.y - 0.5, entity.z,
+                    0, 0, 0,
+                    1, 2
+                )
+                explosion.strength(0.1)
+                explosion.explode()
+                entity.mergeNbt("{CustomNameVisible:0b}")
+                server.scheduleInTicks(40, function (callback) {
+                    entity.tags.add("dead")
+                    server.runCommandSilent("execute as @e[tag=dead] at @s run tp @s ~ -200 ~")
+                })
+                return
+            }
+        }
+        landingPodTick(entity, level, server)
+    })
+}

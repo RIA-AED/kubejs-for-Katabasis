@@ -77,8 +77,7 @@ StartupEvents.registry('entity_type', event => {
             }
         })
 
-        // 渲染设置
-        .setRenderType('solid')
+        .displayName("空投仓")
 
     //可选：设置生成蛋（调试用途，后续可通过指令生成测试）
     // .eggItem(item => {
