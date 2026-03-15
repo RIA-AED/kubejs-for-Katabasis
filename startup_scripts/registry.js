@@ -1,5 +1,5 @@
 StartupEvents.registry('block', event => {
-    event.create('drop_controller')
+    event.create('drop_controller',"cardinal")
         // 碰撞箱：水平 3x3（-16到32像素，即-1格到+2格），高度1格（0到16像素）
         // 这样视觉上占据3x3空间，但注意实体可以穿过（见下方noCollision）
         .box(-16, 0, -16, 32, 16, 32)
