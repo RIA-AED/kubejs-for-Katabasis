@@ -11,25 +11,58 @@ BlockEvents.rightClicked("kubejs:drop_controller", event => {
         let entity = event.level.createEntity("kubejs:landing_pod")
         entity.setPos(pos.x(), pos.y() - 0.5, pos.z())
         entity.mergeNbt("{CustomNameVisible:0b}")
-        entity.noGravity = true
-        entity.spawn()
-        event.server.scheduleInTicks(40, function (callback) {
-            entity.noGravity = false
-            event.player.sendData('cam_control', { status: "third_back" })
-        })
-
+        let freezeTime = 40
         if (event.player.mainHandItem.isEmpty()) {
             event.player.sendData('cam_control', { status: "first" })
             event.player.startRiding(entity, true)
             entity.potionEffects.add("minecraft:resistance", 1000, 4, true, false)
+            freezeTime = playerLandingPodInit(event.player, event.level, event.server)
+
         }
-        
+        entity.noGravity = true
+        entity.spawn()
+        event.server.scheduleInTicks(freezeTime, function (callback) {
+            entity.noGravity = false
+            event.player.sendData('cam_control', { status: "third_back" })
+        })
+
+
+
+
 
 
     } catch (e) {
         event.player.tell(e)
     }
 })
+/** 
+ * 玩家降落仓初始函数
+ * @param {Internal.Player} player
+ * @param {Internal.Level} level
+ * @param {Internal.MinecraftServer} server
+*/
+function playerLandingPodInit(player, level, server) {
+    let timer = 0
+    pod_log.log1.forEach(item => {
+        server.scheduleInTicks(timer, function (callback) {
+            player.setStatusMessage(item)
+        })
+        timer += 1
+    });
+    server.scheduleInTicks(timer, function (callback) {
+        server.runCommandSilent(`title ${player.name.getString()} title [{"text":"RIA","color":"red","bold":true},{"text":" OS","color":"white","bold":true}]`)
+    })
+    pod_log.log2.forEach(item => {
+        server.scheduleInTicks(timer, function (callback) {
+            player.setStatusMessage(item)
+        })
+        timer += randint(3, 6)
+    });
+    server.scheduleInTicks(timer, function (callback) {
+        server.runCommandSilent(`title ${player.name.getString()} subtitle [{"text":"${pod_log.subtitles[randint(0, pod_log.subtitles.length - 1)]}","color":"white"}]`)
+    })
+    return timer
+}
 
 EntityEvents.hurt("kubejs:landing_pod", event => {
     if (event.source.getType() != "fall") return
