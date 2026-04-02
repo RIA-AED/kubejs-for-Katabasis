@@ -11,24 +11,37 @@ BlockEvents.rightClicked("kubejs:drop_controller", event => {
         let entity = event.level.createEntity("kubejs:landing_pod")
         entity.setPos(pos.x(), pos.y() - 0.5, pos.z())
         entity.mergeNbt("{CustomNameVisible:0b}")
-        let freezeTime = 40
-        if (event.player.mainHandItem.isEmpty()) {
+        entity.potionEffects.add("minecraft:resistance", 1000, 4, true, false)
+        let freezeTime = 20
+        let spawned = false
+        if (event.player.offHandItem.id == "create:cardboard" && !event.player.mainHandItem.isEmpty()) {
+            entity.tags.add("item")
+            spawned = true
+        }
+        if (spawned == false && event.player.offHandItem.id != "create:cardboard" && event.player.mainHandItem.id == "kubejs:cdu_drop") {
+            entity.tags.add("cdu")
+            spawned = true
+        }
+        if (spawned == false && event.player.offHandItem.id != "create:cardboard" && event.player.mainHandItem.id == "kubejs:cannon_drop") {
+            entity.tags.add("cannon")
+            spawned = true
+        }
+        if (spawned == false) {
+            entity.tags.add("player")
             event.player.sendData('cam_control', { status: "first" })
             event.player.startRiding(entity, true)
-            entity.potionEffects.add("minecraft:resistance", 1000, 4, true, false)
             freezeTime = playerLandingPodInit(event.player, event.level, event.server)
-
+            event.server.scheduleInTicks(freezeTime, function (callback) {
+                event.player.sendData('cam_control', { status: "third_back" })
+            })
         }
-        entity.noGravity = true
-        entity.spawn()
         event.server.scheduleInTicks(freezeTime, function (callback) {
             entity.noGravity = false
-            event.player.sendData('cam_control', { status: "third_back" })
         })
-
-
-
-
+        entity.noGravity = true
+        entity.spawn()
+        entity.setCustomName("")
+        entity.mergeNbt("{CustomNameVisible:0b}")
 
 
     } catch (e) {
@@ -154,6 +167,31 @@ function landingPodTick(entity, level, server) {
                     explosion.strength(0.1)
                     explosion.explode()
                     entity.mergeNbt("{CustomNameVisible:0b}")
+
+                    if (entity.tags.contains("cdu")) {
+                        entity.block.set("spore:cdu")
+                        entity.block.mergeEntityData({ "fuel": 12000 })
+                    }
+                    if (entity.tags.contains("cannon")) {
+                        entity.block.offset(0, -1, 0).set("createbigcannons:cannon_mount")
+                        entity.block.offset(0, -1, 1).set("minecraft:lever", { "face": "wall", "facing": "south" })
+                        entity.block.offset(0, -1, -1).set("minecraft:lever", { "face": "wall", "facing": "north", "powered": true })
+                        entity.block.set("minecraft:hopper")
+                        entity.block.inventory.insertItem(Item.of('createbigcannons:autocannon_cartridge', 64, '{Projectile:{Count:1b,id:"createbigcannons:flak_autocannon_round",tag:{Fuze:{Count:1b,id:"createbigcannons:impact_fuze"},Tracer:1b}}}'), false)
+                        entity.block.offset(0, 1, -1).set("createbigcannons:steel_autocannon_breech", { "facing": "south", "handle": true })
+                        entity.block.offset(0, 1, -1).mergeEntityData({ "Connections": ["south"] })
+                        entity.block.offset(0, 1, 0).set("createbigcannons:steel_autocannon_recoil_spring", { "facing": "south" })
+                        entity.block.offset(0, 1, 0).mergeEntityData({ "Connections": ["south", "north"] })
+                        entity.block.offset(0, 1, 1).set("createbigcannons:steel_autocannon_barrel", { "facing": "south" })
+                        entity.block.offset(0, 1, 1).mergeEntityData({ "Connections": ["south", "north"] })
+                        entity.block.offset(0, 1, 2).set("createbigcannons:steel_autocannon_barrel", { "facing": "south" })
+                        entity.block.offset(0, 1, 2).mergeEntityData({ "Connections": ["south", "north"] })
+                        entity.block.offset(0, 1, 3).set("createbigcannons:steel_autocannon_barrel", { "facing": "south" })
+                        entity.block.offset(0, 1, 3).mergeEntityData({ "Connections": ["north"] })
+                    }
+
+
+
                     server.scheduleInTicks(40, function (callback) {
                         entity.tags.add("dead")
                         server.runCommandSilent("execute as @e[tag=dead] at @s run tp @s ~ -200 ~")
