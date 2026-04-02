@@ -17,6 +17,11 @@ StartupEvents.registry('block', event => {
         .requiresTool(true)         // 需要工具挖掘
         .tagBlock('minecraft:mineable/pickaxe')  // 可被镐挖掘
         .tagBlock('kubejs:drop_controller')      // 自定义标签，方便事件监听
+
+    event.create("ship_core").defaultCutout().material('medal').tagBlock('minecraft:mineable/pickaxe')
+        .hardness(1)                // 硬度
+        .resistance(1)              // 爆炸抗性
+        .requiresTool(true)         // 需要工具挖掘
 })
 
 StartupEvents.registry('entity_type', event => {
