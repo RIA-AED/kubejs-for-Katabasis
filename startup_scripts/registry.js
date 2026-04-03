@@ -1,5 +1,5 @@
 StartupEvents.registry('block', event => {
-    event.create('drop_controller',"cardinal")
+    event.create('drop_controller', "cardinal")
         // 碰撞箱：水平 3x3（-16到32像素，即-1格到+2格），高度1格（0到16像素）
         // 这样视觉上占据3x3空间，但注意实体可以穿过（见下方noCollision）
         .box(-16, 0, -16, 32, 16, 32)
@@ -17,6 +17,11 @@ StartupEvents.registry('block', event => {
         .requiresTool(true)         // 需要工具挖掘
         .tagBlock('minecraft:mineable/pickaxe')  // 可被镐挖掘
         .tagBlock('kubejs:drop_controller')      // 自定义标签，方便事件监听
+
+    event.create("ship_core").defaultCutout().material('medal').tagBlock('minecraft:mineable/pickaxe')
+        .hardness(1)                // 硬度
+        .resistance(1)              // 爆炸抗性
+        .requiresTool(true)         // 需要工具挖掘
 })
 
 StartupEvents.registry('entity_type', event => {
@@ -84,4 +89,9 @@ StartupEvents.registry('entity_type', event => {
     //     item.backgroundColor(0xFF0000)
     //     item.highlightColor(0xFFFFFF)
     // })
+})
+
+StartupEvents.registry('item', event => {
+    event.create("cdu_drop").displayName("CDU空投")
+    event.create("cannon_drop").displayName("机炮空投")
 })

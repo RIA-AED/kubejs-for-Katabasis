@@ -11,24 +11,74 @@ BlockEvents.rightClicked("kubejs:drop_controller", event => {
         let entity = event.level.createEntity("kubejs:landing_pod")
         entity.setPos(pos.x(), pos.y() - 0.5, pos.z())
         entity.mergeNbt("{CustomNameVisible:0b}")
+        entity.potionEffects.add("minecraft:resistance", 1000, 4, true, false)
+        let freezeTime = 20
+        let spawned = false
+        if (event.player.offHandItem.id == "create:cardboard" && !event.player.mainHandItem.isEmpty()) {
+            entity.tags.add("item")
+            spawned = true
+        }
+        if (spawned == false && event.player.offHandItem.id != "create:cardboard" && event.player.mainHandItem.id == "kubejs:cdu_drop") {
+            entity.tags.add("cdu")
+            spawned = true
+        }
+        if (spawned == false && event.player.offHandItem.id != "create:cardboard" && event.player.mainHandItem.id == "kubejs:cannon_drop") {
+            entity.tags.add("cannon")
+            spawned = true
+        }
+        if (spawned == false) {
+            entity.tags.add("player")
+            event.player.sendData('cam_control', { status: "first" })
+            event.player.startRiding(entity, true)
+            freezeTime = playerLandingPodInit(event.player, event.level, event.server)
+            event.server.scheduleInTicks(freezeTime, function (callback) {
+                event.player.sendData('cam_control', { status: "third_back" })
+            })
+        }
+        event.server.scheduleInTicks(freezeTime, function (callback) {
+            entity.noGravity = false
+        })
         entity.noGravity = true
         entity.spawn()
-        event.server.scheduleInTicks(40, function (callback) {
-            entity.noGravity = false
-            event.player.sendData('cam_control', { status: "third_back" })
-        })
-        event.player.sendData('cam_control', { status: "first" })
-        event.player.startRiding(entity, true)
-        entity.potionEffects.add("minecraft:resistance", 1000, 4, true, false)
+        entity.setCustomName("")
+        entity.mergeNbt("{CustomNameVisible:0b}")
+
 
     } catch (e) {
         event.player.tell(e)
     }
 })
+/** 
+ * 玩家降落仓初始函数
+ * @param {Internal.Player} player
+ * @param {Internal.Level} level
+ * @param {Internal.MinecraftServer} server
+*/
+function playerLandingPodInit(player, level, server) {
+    let timer = 0
+    pod_log.log1.forEach(item => {
+        server.scheduleInTicks(timer, function (callback) {
+            player.setStatusMessage(item)
+        })
+        timer += 1
+    });
+    server.scheduleInTicks(timer, function (callback) {
+        server.runCommandSilent(`title ${player.name.getString()} title [{"text":"RIA","color":"red","bold":true},{"text":" OS","color":"white","bold":true}]`)
+    })
+    pod_log.log2.forEach(item => {
+        server.scheduleInTicks(timer, function (callback) {
+            player.setStatusMessage(item)
+        })
+        timer += randint(3, 6)
+    });
+    server.scheduleInTicks(timer, function (callback) {
+        server.runCommandSilent(`title ${player.name.getString()} subtitle [{"text":"${pod_log.subtitles[randint(0, pod_log.subtitles.length - 1)]}","color":"white"}]`)
+    })
+    return timer
+}
 
 EntityEvents.hurt("kubejs:landing_pod", event => {
     if (event.source.getType() != "fall") return
-
     event.cancel()
 })
 
@@ -48,78 +98,106 @@ function landingPodTick(entity, level, server) {
         if (!entity.persistentData.contains("isFinalFalling")) {
             entity.persistentData.isFinalFalling = false
         }
-        if (entity.persistentData.isFinalFalling == false) {
-            try {
-                for (let offset = 1; offset <= 20; offset++) {
-                    if (entity.block.offset(0, -offset, 0) != "minecraft:air") {
-                        entity.persistentData.isFinalFalling = true
-                        entity.persistentData.putString('state', 'landing')
-                        entity.triggerAnimation('main', 'landing')
-                        entity.potionEffects.add("minecraft:slow_falling", 1000, 2, true, false)
-                        entity.playSound("createbigcannons:lava_fluid_release",1,1)
-                        //server.runCommandSilent(`execute as @e[type=]playsound createbigcannons:lava_fluid_release ambient @a ${entity.x} ${entity.y} ${entity.z} 1 0.7 1`)
-                        break
+
+        if (entity.block.y < 256) {
+            if (entity.persistentData.isFinalFalling == false) {
+                try {
+                    for (let offset = 1; offset <= 20; offset++) {
+                        if (entity.block.offset(0, -offset, 0) != "minecraft:air") {
+                            entity.persistentData.isFinalFalling = true
+                            entity.persistentData.putString('state', 'landing')
+                            entity.triggerAnimation('main', 'landing')
+                            entity.potionEffects.add("minecraft:slow_falling", 1000, 2, true, false)
+                            entity.playSound("createbigcannons:lava_fluid_release", 1, 1)
+                            //server.runCommandSilent(`execute as @e[type=]playsound createbigcannons:lava_fluid_release ambient @a ${entity.x} ${entity.y} ${entity.z} 1 0.7 1`)
+                            break
+                        }
                     }
+                } catch (e) {
+                    server.tell(e)
                 }
-            } catch (e) {
-                server.tell(e)
-            }
 
-        } else {
-            let maxM = 0.2
+            } else {
+                let maxM = 0.2
 
-            let clampedX = Math.max(-maxM, Math.min(maxM, entity.motionX))
-            let clampedZ = Math.max(-maxM, Math.min(maxM, entity.motionZ))
+                let clampedX = Math.max(-maxM, Math.min(maxM, entity.motionX))
+                let clampedZ = Math.max(-maxM, Math.min(maxM, entity.motionZ))
 
-            entity.setMotion(clampedX, -0.3, clampedZ)
+                entity.setMotion(clampedX, -0.3, clampedZ)
 
-            level.spawnParticles(
-                'createbigcannons:smoke',
-                true,
-                entity.x, entity.y - 2, entity.z,
-                0.3, 0, 0.3,
-                3, 0.05
-            )
-            level.spawnParticles(
-                'minecraft:campfire_cosy_smoke',
-                true,
-                entity.x, entity.y - 2, entity.z,
-                0.3, 0, 0.3,
-                3, 0.05
-            )
-
-
-            if (entity.onGround()) {
-                entity.persistentData.putString('state', 'break')
-                entity.mergeNbt("{CustomNameVisible:0b}")
-                entity.setCustomNameVisible(false)
-                entity.setCustomName("")
-                entity.triggerAnimation('main', 'break')  // 触发刷新，控制器会重新评估并执行 
-                entity.getPassengers().forEach(it => {
-                    it.unRide()
-                    if (it.type == "minecraft:player") {
-                        it.sendData('cam_control', { status: "first" })
-                        server.scheduleInTicks(2, function (callback) {
-                            it.sendData('cam_control', { status: "normal" })
-                        })
-                    }
-                })
-                let explosion = entity.block.createExplosion()
                 level.spawnParticles(
-                    'createbigcannons:fluid_cloud',
+                    'createbigcannons:smoke',
                     true,
-                    entity.x, entity.y - 0.5, entity.z,
-                    0, 0, 0,
-                    1, 2
+                    entity.x, entity.y - 2, entity.z,
+                    0.3, 0, 0.3,
+                    3, 0.05
                 )
-                explosion.strength(0.1)
-                explosion.explode()
-                entity.mergeNbt("{CustomNameVisible:0b}")
-                server.scheduleInTicks(40, function (callback) {
-                    entity.tags.add("dead")
-                    server.runCommandSilent("execute as @e[tag=dead] at @s run tp @s ~ -200 ~")
-                })
-                return
+                level.spawnParticles(
+                    'minecraft:campfire_cosy_smoke',
+                    true,
+                    entity.x, entity.y - 2, entity.z,
+                    0.3, 0, 0.3,
+                    3, 0.05
+                )
+
+
+                if (entity.onGround()) {
+                    entity.persistentData.putString('state', 'break')
+                    entity.mergeNbt("{CustomNameVisible:0b}")
+                    entity.setCustomNameVisible(false)
+                    entity.setCustomName("")
+                    entity.triggerAnimation('main', 'break')  // 触发刷新，控制器会重新评估并执行 
+                    entity.getPassengers().forEach(it => {
+                        it.unRide()
+                        if (it.type == "minecraft:player") {
+                            it.sendData('cam_control', { status: "first" })
+                            server.scheduleInTicks(2, function (callback) {
+                                it.sendData('cam_control', { status: "normal" })
+                            })
+                        }
+                    })
+                    let explosion = entity.block.createExplosion()
+                    level.spawnParticles(
+                        'createbigcannons:fluid_cloud',
+                        true,
+                        entity.x, entity.y - 0.5, entity.z,
+                        0, 0, 0,
+                        1, 2
+                    )
+                    explosion.strength(0.1)
+                    explosion.explode()
+                    entity.mergeNbt("{CustomNameVisible:0b}")
+
+                    if (entity.tags.contains("cdu")) {
+                        entity.block.set("spore:cdu")
+                        entity.block.mergeEntityData({ "fuel": 12000 })
+                    }
+                    if (entity.tags.contains("cannon")) {
+                        entity.block.offset(0, -1, 0).set("createbigcannons:cannon_mount")
+                        entity.block.offset(0, -1, 1).set("minecraft:lever", { "face": "wall", "facing": "south" })
+                        entity.block.offset(0, -1, -1).set("minecraft:lever", { "face": "wall", "facing": "north", "powered": true })
+                        entity.block.set("minecraft:hopper")
+                        entity.block.inventory.insertItem(Item.of('createbigcannons:autocannon_cartridge', 64, '{Projectile:{Count:1b,id:"createbigcannons:flak_autocannon_round",tag:{Fuze:{Count:1b,id:"createbigcannons:impact_fuze"},Tracer:1b}}}'), false)
+                        entity.block.offset(0, 1, -1).set("createbigcannons:steel_autocannon_breech", { "facing": "south", "handle": true })
+                        entity.block.offset(0, 1, -1).mergeEntityData({ "Connections": ["south"] })
+                        entity.block.offset(0, 1, 0).set("createbigcannons:steel_autocannon_recoil_spring", { "facing": "south" })
+                        entity.block.offset(0, 1, 0).mergeEntityData({ "Connections": ["south", "north"] })
+                        entity.block.offset(0, 1, 1).set("createbigcannons:steel_autocannon_barrel", { "facing": "south" })
+                        entity.block.offset(0, 1, 1).mergeEntityData({ "Connections": ["south", "north"] })
+                        entity.block.offset(0, 1, 2).set("createbigcannons:steel_autocannon_barrel", { "facing": "south" })
+                        entity.block.offset(0, 1, 2).mergeEntityData({ "Connections": ["south", "north"] })
+                        entity.block.offset(0, 1, 3).set("createbigcannons:steel_autocannon_barrel", { "facing": "south" })
+                        entity.block.offset(0, 1, 3).mergeEntityData({ "Connections": ["north"] })
+                    }
+
+
+
+                    server.scheduleInTicks(40, function (callback) {
+                        entity.tags.add("dead")
+                        server.runCommandSilent("execute as @e[tag=dead] at @s run tp @s ~ -200 ~")
+                    })
+                    return
+                }
             }
         }
         landingPodTick(entity, level, server)
