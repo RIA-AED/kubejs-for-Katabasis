@@ -96,4 +96,14 @@ StartupEvents.registry('entity_type', event => {
 StartupEvents.registry('item', event => {
     event.create("cdu_drop").displayName("CDU空投")
     event.create("cannon_drop").displayName("机炮空投")
+
+    event.create("spore_biomass", "basic").displayName('生物质团')
+    event.create("fibrosis_biomass", "basic").displayName('纤维化生物质团')
+    event.create("carbonization_biomass", "basic").displayName('碳化生物质团')
+    event.create("fossilization_biomass", "basic").displayName('石化生物质团')
+    event.create("calcification_biomass", "basic").displayName('钙化生物质团')
+    event.create("blazing_biomass", "basic").displayName('炽灼化生物质团')
+    event.create("end_biomass", "basic").displayName('末影化生物质团')
+    event.create("activation_biomass", "basic").displayName('活化生物质团')
+    event.create("high_energy_biomass", "basic").displayName('高能化生物质团')
 })
