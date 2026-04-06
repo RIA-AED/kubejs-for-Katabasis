@@ -24,6 +24,10 @@ StartupEvents.registry('block', event => {
         .resistance(1)              // 爆炸抗性
         .requiresTool(true)         // 需要工具挖掘
         .displayName("飞船核心")
+
+    event.create("filler_block_1").blockEntity(entity => { }).material('wool').hardness(0).resistance(10).noDrops().displayName("发泡方块(填补型)")
+    event.create("filler_block_2").blockEntity(entity => { }).material('wool').hardness(0).resistance(10).noDrops().displayName("发泡方块(扩展型)")
+    event.create("filling_block").material('wool').hardness(0).resistance(10).noDrops().displayName("发泡填充方块")
 })
 
 StartupEvents.registry('entity_type', event => {
@@ -105,4 +109,6 @@ StartupEvents.registry('item', event => {
     event.create("end_biomass", "basic").displayName('末影化生物质团')
     event.create("activation_biomass", "basic").displayName('活化生物质团')
     event.create("high_energy_biomass", "basic").displayName('高能化生物质团')
+
+
 })
