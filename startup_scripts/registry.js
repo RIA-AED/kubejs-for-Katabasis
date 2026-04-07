@@ -28,10 +28,16 @@ StartupEvents.registry('block', event => {
     event.create("filler_block_1").blockEntity(entity => { }).material('wool').hardness(0).resistance(10).noDrops().displayName("发泡方块(填补型)")
     event.create("filler_block_2").blockEntity(entity => { }).material('wool').hardness(0).resistance(10).noDrops().displayName("发泡方块(扩展型)")
     event.create("filling_block").randomTick(tick => {
-        if (Math.random() < 0.1) {
-            tick.block.set("air")
+        let nowAge = parseInt(tick.block.properties.age)
+        if (nowAge < 3) {
+            if (Math.random() < 0.25) {
+                tick.block.set("kubejs:filling_block", { "age": `${nowAge + 1}` })
+            }
         }
-    }).material('wool').hardness(0).resistance(10).noDrops().displayName("发泡填充方块")
+        else {
+            tick.block.set("minecraft:air")
+        }
+    }).property(BlockProperties.AGE_3).material('wool').hardness(0).resistance(10).noDrops().displayName("发泡填充方块")
 })
 
 StartupEvents.registry('entity_type', event => {
