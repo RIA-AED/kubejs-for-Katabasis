@@ -4,7 +4,7 @@ let batch_fill = 10
 
 BlockEvents.placed("kubejs:filler_block_1", event => {
     let block = event.block
-
+    playsound(event.server, block, "protection_pixel:reactoroff", 1, 1.5)
     block.entity.persistentData.xList = [0]
     block.entity.persistentData.yList = [0]
     block.entity.persistentData.zList = [0]
@@ -15,7 +15,7 @@ BlockEvents.placed("kubejs:filler_block_1", event => {
 })
 BlockEvents.placed("kubejs:filler_block_2", event => {
     let block = event.block
-
+    playsound(event.server, block, "protection_pixel:reactoroff", 1, 1.5)
     block.entity.persistentData.xList = [0]
     block.entity.persistentData.yList = [0]
     block.entity.persistentData.zList = [0]
@@ -26,7 +26,7 @@ BlockEvents.placed("kubejs:filler_block_2", event => {
 })
 
 BlockEvents.rightClicked(event => {
-    if (event.block.hasTag("replaceable")) event.player.tell(11)
+    if (event.block.hasTag("spore:removable_foliage")) event.player.tell(11)
 })
 
 /**
@@ -48,6 +48,7 @@ function filling_block_1(block, server) {
 
 
         try {
+
             block.entity.persistentData.front += 1
             nowBlock = block.offset(nowX, nowY, nowZ)
             placeable = false
@@ -56,7 +57,7 @@ function filling_block_1(block, server) {
                 if (nowBlock == "kubejs:filler_block_1") {
                     placeable = true
                 }
-                if (placeable == false && (nowBlock == "minecraft:air" || nowBlock.hasTag("replaceable"))) {
+                if (placeable == false && canReplace(nowBlock)) {
                     nowBlock.set("kubejs:filling_block")
                     block.entity.persistentData.filledCount += 1
                     placeable = true
@@ -67,39 +68,41 @@ function filling_block_1(block, server) {
             //event.player.tell(e)
         }
         if (placeable) {
-            if (nowBlock.offset(0, 1, 0) == "minecraft:air" || nowBlock.offset(0, 1, 0).hasTag("replaceable")) {
+            if (canReplace(nowBlock.offset(0, 1, 0))) {
                 xList.push(nowX + 0)
                 yList.push(nowY + 1)
                 zList.push(nowZ + 0)
             }
-            if (nowBlock.offset(1, 0, 0) == "minecraft:air" || nowBlock.offset(1, 0, 0).hasTag("replaceable")) {
+            if (canReplace(nowBlock.offset(1, 0, 0))) {
                 xList.push(nowX + 1)
                 yList.push(nowY + 0)
                 zList.push(nowZ + 0)
             }
-            if (nowBlock.offset(0, 0, 1) == "minecraft:air" || nowBlock.offset(0, 0, 1).hasTag("replaceable")) {
+            if (canReplace(nowBlock.offset(0, 0, 1))) {
                 xList.push(nowX + 0)
                 yList.push(nowY + 0)
                 zList.push(nowZ + 1)
             }
-            if (nowBlock.offset(0, -1, 0) == "minecraft:air" || nowBlock.offset(0, -1, 0).hasTag("replaceable")) {
+            if (canReplace(nowBlock.offset(0, -1, 0))) {
                 xList.push(nowX + 0)
                 yList.push(nowY - 1)
                 zList.push(nowZ + 0)
             }
-            if (nowBlock.offset(-1, 0, 0) == "minecraft:air" || nowBlock.offset(-1, 0, 0).hasTag("replaceable")) {
+            if (canReplace(nowBlock.offset(-1, 0, 0))) {
                 xList.push(nowX - 1)
                 yList.push(nowY + 0)
                 zList.push(nowZ + 0)
             }
-            if (nowBlock.offset(0, 0, -1) == "minecraft:air" || nowBlock.offset(0, 0, -1).hasTag("replaceable")) {
+            if (canReplace(nowBlock.offset(0, 0, -1))) {
                 xList.push(nowX + 0)
                 yList.push(nowY + 0)
                 zList.push(nowZ - 1)
             }
-            //event.player.tell(xList)
+            //event.player.tell(xList)/playsound  ambient @a -3516.12 79.00 -3989.54 1 0.3 1
         }
         if (block.entity.persistentData.filledCount % batch_fill == 0) {
+            playsound(server, nowBlock, "minecraft:block.wool.place", 0.5, Math.random())
+            //server.runCommandSilent(`execute positioned ${} ${nowBlock.y} ${nowBlock.z} run playsound  block @a[distance=..20] ${nowBlock.x} ${nowBlock.y} ${nowBlock.z} 0.5 ${Math.random()} 0`)
             server.scheduleInTicks(1, function (callback) {
                 filling_block_1(block, server)
             })
@@ -107,6 +110,8 @@ function filling_block_1(block, server) {
             filling_block_1(block, server)
         }
 
+    } else {
+        block.set("kubejs:filling_block")
     }
 }
 
@@ -131,7 +136,7 @@ function filling_block_2(block, server) {
             if (nowBlock == "kubejs:filler_block_2") {
                 placeable = true
             }
-            if (placeable == false && (nowBlock == "minecraft:air" || nowBlock.hasTag("replaceable"))) {
+            if (placeable == false && canReplace(nowBlock)) {
                 nowBlock.set("kubejs:filling_block")
                 block.entity.persistentData.filledCount += 1
                 placeable = true
@@ -142,22 +147,22 @@ function filling_block_2(block, server) {
             //event.player.tell(e)
         }
         if (placeable) {
-            if (nowBlock.offset(1, 0, 0) == "minecraft:air" || nowBlock.offset(1, 0, 0).hasTag("replaceable")) {
+            if (canReplace(nowBlock.offset(1, 0, 0))) {
                 xList.push(nowX + 1)
                 yList.push(nowY + 0)
                 zList.push(nowZ + 0)
             }
-            if (nowBlock.offset(0, 0, 1) == "minecraft:air" || nowBlock.offset(0, 0, 1).hasTag("replaceable")) {
+            if (canReplace(nowBlock.offset(0, 0, 1))) {
                 xList.push(nowX + 0)
                 yList.push(nowY + 0)
                 zList.push(nowZ + 1)
             }
-            if (nowBlock.offset(-1, 0, 0) == "minecraft:air" || nowBlock.offset(-1, 0, 0).hasTag("replaceable")) {
+            if (canReplace(nowBlock.offset(-1, 0, 0))) {
                 xList.push(nowX - 1)
                 yList.push(nowY + 0)
                 zList.push(nowZ + 0)
             }
-            if (nowBlock.offset(0, 0, -1) == "minecraft:air" || nowBlock.offset(0, 0, -1).hasTag("replaceable")) {
+            if (canReplace(nowBlock.offset(0, 0, -1))) {
                 xList.push(nowX + 0)
                 yList.push(nowY + 0)
                 zList.push(nowZ - 1)
@@ -165,6 +170,7 @@ function filling_block_2(block, server) {
             //event.player.tell(xList)
         }
         if (block.entity.persistentData.filledCount % batch_fill == 0) {
+            playsound(server, nowBlock, "minecraft:block.wool.place", 0.5, Math.random())
             server.scheduleInTicks(1, function (callback) {
                 filling_block_2(block, server)
             })
@@ -172,6 +178,8 @@ function filling_block_2(block, server) {
             filling_block_2(block, server)
         }
 
+    } else {
+        block.set("kubejs:filling_block")
     }
 }
 
@@ -182,11 +190,23 @@ function filling_block_2(block, server) {
  */
 function getFacesAir(block) {
     let r = 0
-    if (block.offset(0, 1, 0) == "minecraft:air" || block.offset(0, 1, 0).hasTag("replaceable")) r++
-    if (block.offset(1, 0, 0) == "minecraft:air" || block.offset(1, 0, 0).hasTag("replaceable")) r++
-    if (block.offset(0, 0, 1) == "minecraft:air" || block.offset(0, 0, 1).hasTag("replaceable")) r++
-    if (block.offset(0, -1, 0) == "minecraft:air" || block.offset(0, -1, 0).hasTag("replaceable")) r++
-    if (block.offset(-1, 0, 0) == "minecraft:air" || block.offset(-1, 0, 0).hasTag("replaceable")) r++
-    if (block.offset(0, 0, -1) == "minecraft:air" || block.offset(0, 0, -1).hasTag("replaceable")) r++
+    if (canReplace(block.offset(0, 1, 0))) r++
+    if (canReplace(block.offset(1, 0, 0))) r++
+    if (canReplace(block.offset(0, 0, 1))) r++
+    if (canReplace(block.offset(0, -1, 0))) r++
+    if (canReplace(block.offset(-1, 0, 0))) r++
+    if (canReplace(block.offset(0, 0, -1))) r++
     return r
+}
+
+/**
+ * 检测目标位置是否可被替换（草、菌丝等）
+ * @param {Internal.BlockContainerJS} block
+ */
+function canReplace(block) {
+    if (block == "minecraft:air" || block.hasTag("replaceable") || block.hasTag("spore:removable_foliage") || block.hasTag("small_flowers")
+        || block.hasTag("immersive_weathering:small_mushrooms")) {
+        return true
+    }
+    return false
 }

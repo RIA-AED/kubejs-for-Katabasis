@@ -27,7 +27,11 @@ StartupEvents.registry('block', event => {
 
     event.create("filler_block_1").blockEntity(entity => { }).material('wool').hardness(0).resistance(10).noDrops().displayName("发泡方块(填补型)")
     event.create("filler_block_2").blockEntity(entity => { }).material('wool').hardness(0).resistance(10).noDrops().displayName("发泡方块(扩展型)")
-    event.create("filling_block").material('wool').hardness(0).resistance(10).noDrops().displayName("发泡填充方块")
+    event.create("filling_block").randomTick(tick => {
+        if (Math.random() < 0.1) {
+            tick.block.set("air")
+        }
+    }).material('wool').hardness(0).resistance(10).noDrops().displayName("发泡填充方块")
 })
 
 StartupEvents.registry('entity_type', event => {
@@ -100,6 +104,7 @@ StartupEvents.registry('entity_type', event => {
 StartupEvents.registry('item', event => {
     event.create("cdu_drop").displayName("CDU空投")
     event.create("cannon_drop").displayName("机炮空投")
+    event.create("fill_drop").displayName("发泡空投")
 
     event.create("fibrosis_biomass", "basic").displayName('纤维化生物质团')
     event.create("carbonization_biomass", "basic").displayName('碳化生物质团')
