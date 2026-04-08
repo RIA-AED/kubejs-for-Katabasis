@@ -22,6 +22,10 @@ BlockEvents.rightClicked("kubejs:drop_controller", event => {
             entity.tags.add("cdu")
             spawned = true
         }
+        if (spawned == false && event.player.offHandItem.id != "create:cardboard" && event.player.mainHandItem.id == "kubejs:fill_drop") {
+            entity.tags.add("fill")
+            spawned = true
+        }
         if (spawned == false && event.player.offHandItem.id != "create:cardboard" && event.player.mainHandItem.id == "kubejs:cannon_drop") {
             entity.tags.add("cannon")
             spawned = true
@@ -189,7 +193,21 @@ function landingPodTick(entity, level, server) {
                         entity.block.offset(0, 1, 3).set("createbigcannons:steel_autocannon_barrel", { "facing": "south" })
                         entity.block.offset(0, 1, 3).mergeEntityData({ "Connections": ["north"] })
                     }
-
+                    if (entity.tags.contains("fill")) {
+                        entity.block.set("kubejs:filler_block_2")
+                        try {
+                            playsound(server, entity.block, "protection_pixel:reactoroff", 1, 1.5)
+                            entity.block.entity.persistentData.xList = [0]
+                            entity.block.entity.persistentData.yList = [0]
+                            entity.block.entity.persistentData.zList = [0]
+                            entity.block.entity.persistentData.front = 0
+                            entity.block.entity.persistentData.filledCount = 0
+                            filling_block_2(entity.block, server)
+                        }
+                        catch (e) {
+                            server.tell(e)
+                        }
+                    }
 
 
                     server.scheduleInTicks(40, function (callback) {
