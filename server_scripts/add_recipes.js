@@ -58,7 +58,6 @@ ServerEvents.recipes(event => {
         event.recipes.createDeploying("kubejs:carbonization_biomass",["kubejs:carbonization_biomass",'minecraft:stick']),    
         event.recipes.createDeploying("kubejs:carbonization_biomass",["kubejs:carbonization_biomass",'kubejs:tumor']),
         event.recipes.createDeploying("kubejs:carbonization_biomass",["kubejs:carbonization_biomass",'minecraft:stick']), 
-        event.recipes.createFilling("kubejs:carbonization_biomass", ["kubejs:carbonization_biomass", Fluid.of('create_things_and_misc:slime', 250)]),
         event.recipes.createPressing("kubejs:carbonization_biomass", "kubejs:carbonization_biomass")
     ]).transitionalItem("kubejs:carbonization_biomass").loops(1)
     //高能
