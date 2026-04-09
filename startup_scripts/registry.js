@@ -20,7 +20,30 @@ StartupEvents.registry('block', event => {
         .displayName("空降控制台")
 
     event.create("ship_core").defaultCutout().material('medal').tagBlock('minecraft:mineable/pickaxe')
-        .blockEntity(entity => { })
+        .blockEntity(blockEntity => {
+            blockEntity.serverTick(20, entity => {
+                let server = entity.level.server
+                let data = server.persistentData
+                if (entity.persistentData.energy == null) {
+                    entity.persistentData.energy = 0
+                }
+                if (!data.base_core_pos || entity.persistentData.energy >= 100) return
+                let baseCorePos = new BlockPos(data.base_core_pos.x, data.base_core_pos.y, data.base_core_pos.z)
+                let baseShip = VSHelper.getShipByBlockPos(entity.level, baseCorePos)
+                if (!baseShip || data.base_core_pos.dim !== entity.level.dimension) return
+                let base = VSHelper.shipPosToWorldPos(baseShip, baseCorePos)
+                if (!base) return
+                let shipPos = entity.blockPos
+                let ship = VSHelper.getShipByBlockPos(entity.level, shipPos)
+                if (!ship) return
+                let worldPos = VSHelper.shipPosToWorldPos(ship, shipPos)
+                if (!worldPos) return
+
+                if (isInRange(worldPos, base, 30)) {
+                    entity.persistentData.energy++
+                }
+            })
+        })
         .hardness(1)                // 硬度
         .resistance(20)              // 爆炸抗性
         .requiresTool(true)         // 需要工具挖掘
