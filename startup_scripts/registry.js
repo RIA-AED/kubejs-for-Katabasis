@@ -20,10 +20,17 @@ StartupEvents.registry('block', event => {
         .displayName("空降控制台")
 
     event.create("ship_core").defaultCutout().material('medal').tagBlock('minecraft:mineable/pickaxe')
+        .blockEntity(entity => { })
         .hardness(1)                // 硬度
-        .resistance(1)              // 爆炸抗性
+        .resistance(20)              // 爆炸抗性
         .requiresTool(true)         // 需要工具挖掘
         .displayName("飞船核心")
+    event.create("base_core").defaultCutout().material('medal').tagBlock('minecraft:mineable/pickaxe')
+        .blockEntity(entity => { })
+        .hardness(1)                // 硬度
+        .resistance(20)              // 爆炸抗性
+        .requiresTool(true)         // 需要工具挖掘
+        .displayName("母舰核心")
 
     event.create("filler_block_1").blockEntity(entity => { }).material('wool').hardness(0).resistance(10).noDrops().displayName("发泡方块(填补型)")
     event.create("filler_block_2").blockEntity(entity => { }).material('wool').hardness(0).resistance(10).noDrops().displayName("发泡方块(扩展型)")
