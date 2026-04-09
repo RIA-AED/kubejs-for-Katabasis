@@ -1,0 +1,10 @@
+{
+  "variants": {
+    "powered=false": {
+      "model": "kubejs:block/energy_transport_terminal"
+    },
+    "powered=true": {
+      "model": "kubejs:block/energy_transport_terminal_1"
+    }
+  }
+}
