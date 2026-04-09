@@ -23,7 +23,6 @@ ServerEvents.recipes(event => {
     //生物质团配方
     //菌染
     event.shapeless('4x kubejs:spore_biomass', '4x #katabasis:spore_tissue_t1')
-
     event.shapeless('6x kubejs:spore_biomass', ['2x #katabasis:spore_tissue_t1', '2x #katabasis:spore_tissue_t2'])
 
     event.recipes.createSequencedAssembly([
@@ -42,24 +41,33 @@ ServerEvents.recipes(event => {
     event.recipes.createSequencedAssembly(
         'kubejs:activation_biomass',
         'kubejs:spore_biomass', [
-        event.recipes.createDeploying('kubejs:spore_biomass',['kubejs:spore_biomass','#katabasis:spore_tissue_t1']),
         event.recipes.createFilling('kubejs:spore_biomass', ['kubejs:spore_biomass', Fluid.of('create_things_and_misc:slime', 250)]),
+        event.recipes.createDeploying('kubejs:spore_biomass',['kubejs:spore_biomass','#katabasis:spore_tissue_t1']),
         event.recipes.createDeploying('kubejs:spore_biomass',['kubejs:spore_biomass','#katabasis:spore_tissue_t1']),
         event.recipes.createPressing('kubejs:spore_biomass', 'kubejs:spore_biomass')
     ]).transitionalItem('kubejs:spore_biomass').loops(1)
-    //石化
-    event.recipes.create.mixing('kubejs:fossilization_biomass',['kubejs:spore_biomass','16x #forge:stone',Fluid.of('create_things_and_misc:slime', 250)])
-    //炭化
-    event.recipes.create.mixing("kubejs:carbonization_biomass",['kubejs:spore_biomass','16x #minecraft:coals',Fluid.of('create_things_and_misc:slime', 250)])
     //纤维化
     event.recipes.createSequencedAssembly(
         'kubejs:fibrosis_biomass',
         "kubejs:carbonization_biomass", [
+        event.recipes.createFilling("kubejs:carbonization_biomass", ["kubejs:carbonization_biomass", Fluid.of('create_things_and_misc:slime', 250)]),
         event.recipes.createDeploying("kubejs:carbonization_biomass",["kubejs:carbonization_biomass",'minecraft:stick']),    
         event.recipes.createDeploying("kubejs:carbonization_biomass",["kubejs:carbonization_biomass",'kubejs:tumor']),
         event.recipes.createDeploying("kubejs:carbonization_biomass",["kubejs:carbonization_biomass",'minecraft:stick']), 
         event.recipes.createPressing("kubejs:carbonization_biomass", "kubejs:carbonization_biomass")
     ]).transitionalItem("kubejs:carbonization_biomass").loops(1)
+    //钙化
+    event.recipes.createSequencedAssembly(
+        'kubejs:calcification_biomass',
+        'kubejs:fossilization_biomass', [
+        event.recipes.createFilling('kubejs:fossilization_biomass', ['kubejs:fossilization_biomass', Fluid.of('create_things_and_misc:slime', 250)]),
+        event.recipes.createDeploying('kubejs:fossilization_biomass',['kubejs:fossilization_biomass','minecraft:bone_block']),    
+        event.recipes.createPressing("kubejs:fossilization_biomass", "kubejs:fossilization_biomass"),
+        event.recipes.createDeploying('kubejs:fossilization_biomass',['kubejs:fossilization_biomass','minecraft:bone_block']), 
+        event.recipes.createPressing('kubejs:fossilization_biomass', 'kubejs:fossilization_biomass'),
+        event.recipes.createDeploying('kubejs:fossilization_biomass',['kubejs:fossilization_biomass','minecraft:bone_block']), 
+        event.recipes.createPressing('kubejs:fossilization_biomass', 'kubejs:fossilization_biomass')
+    ]).transitionalItem('kubejs:fossilization_biomass').loops(1)
     //高能
     event.custom({
 		"type": "createaddition:charging",
@@ -74,12 +82,57 @@ ServerEvents.recipes(event => {
 		"energy": 10000,
 		"maxChargeRate": 1000
 	})
+    //石化
+    event.recipes.create.mixing('kubejs:fossilization_biomass',['kubejs:spore_biomass','16x #forge:stone',Fluid.of('create_things_and_misc:slime', 250)])
+    //炭化
+    event.recipes.create.mixing("kubejs:carbonization_biomass",['kubejs:spore_biomass','16x #minecraft:coals',Fluid.of('create_things_and_misc:slime', 250)])
+
+
+    //道具配方
+    //填补发泡
+    event.shaped("kubejs:filler_block_1", [
+		'ABA',
+		'BCB',
+		'ABA'
+	], {
+		A: 'minecraft:sand',
+		B: 'minecraft:gravel',
+        C:Item.of('protection_pixel:watertank', '{Damage:0}')
+    })
+    //扩展发泡
+    event.shaped("kubejs:filler_block_2", [
+		'ABA',
+		'BCB',
+		'ABA'
+	], {
+		B: 'minecraft:sand',
+		A: 'minecraft:gravel',
+        C:Item.of('protection_pixel:watertank', '{Damage:0}')
+    })
+    //机炮空投
+    
+    //CDU空投
 
     //工业配方
+    //骨头
+    Ingredient.of(/(claw_fr|armor_fr|shield_fr|spine)/).itemIds.forEach(id => {
+        event.shapeless('3x minecraft:bone',Item.of(id))
+    })    
     //火药
     event.recipes.create.crushing("32x minecraft:gunpowder",'kubejs:high_energy_biomass')
     //树苗
     Ingredient.of('#create:pulpifiable').itemIds.forEach(id => {
         event.recipes.create.cutting((Item.of(id)),'kubejs:fibrosis_biomass')
     })
+    //种子
+    Ingredient.of('#forge:seeds').itemIds.forEach(id => {
+        let a = id.toString().replace(':','/')
+        event.recipes.create.crushing((Item.of(id)),'kubejs:fibrosis_biomass').id(`${a}_manual_only`)
+    })
+    //矿物
+    Ingredient.of(/(electrum|:iron|gold|copper|zinc|brass)_nugget$/).itemIds.forEach(id => {
+        event.recipes.create.mixing([Item.of(id,10),Fluid.of('minecraft:water', 250)],[Item.of(id),'kubejs:fossilization_biomass',Fluid.of('create_things_and_misc:slime', 250)])
+    })
+    //苔藓
+    event.recipes.create.mixing(['8x immersive_weathering:moss_clump',Fluid.of('minecraft:water', 250)],['immersive_weathering:moss_clump','kubejs:activation_biomass',Fluid.of('create_things_and_misc:slime', 250)])
 })
