@@ -1,38 +1,25 @@
 PlayerEvents.respawned(event => {
     const player = event.player
-    player.persistentData.weakness = true;
-    player.potionEffects.add("minecraft:weakness", -1, 0, false, false)
-})
-
-PlayerEvents.tick(event => {
-    const player = event.player
-    const hasWeakness = player.persistentData.weakness
-    if (hasWeakness) {
-        if (!player.hasEffect("minecraft:weakness")) {
-            player.potionEffects.add("minecraft:weakness", -1, 0, false, false)
-        }
-    } else {
-        if (player.hasEffect("minecraft:weakness")) {
-            player.removeEffect("minecraft:weakness")
-        }
-    }
+    RespawnWeaknessApi.applyWeakened(player)
 })
 
 BlockEvents.rightClicked("kubejs:base_core", event => {
     const player = event.player
-    player.persistentData.weakness = false;
+    if (RespawnWeaknessApi.isWeakened(player)) {
+        RespawnWeaknessApi.recoverPlayer(player)
+    }
 })
 
 BlockEvents.rightClicked("kubejs:ship_core", event => {
     const { player, block, level } = event
-    if (event.level.isClientSide() || player.persistentData.weakness) return
+    if (event.level.isClientSide() || RespawnWeaknessApi.isWeakened(player)) return
     let blockEntity = level.getBlockEntity(block.pos)
     let energy = blockEntity.persistentData.energy ?? 0
-    if (player.persistentData.weakness) {
+    if (RespawnWeaknessApi.isWeakened(player)) {
         if (energy > 0) {
             energy--
-            player.persistentData.weakness = false;
             player.tell(`能量剩余: ${energy}`)
+            RespawnWeaknessApi.recoverPlayer(player)
         } else {
             player.tell("能量不足")
         }
@@ -43,7 +30,8 @@ BlockEvents.rightClicked("kubejs:ship_core", event => {
 })
 
 BlockEvents.placed("kubejs:base_core", event => {
-    if (event.server.persistentData.base_core){
+    let base = event.server.persistentData.base_core_pos
+    if (base && event.level.getBlock(new BlockPos(base.x, base.y, base.z)).id === "kubejs:base_core") {
         event.player.tell("世界内已存在 base_core 了")
         event.cancel()
     } else if (!VSHelper.isBlockInShipyard(event.level, event.block.pos)) {
