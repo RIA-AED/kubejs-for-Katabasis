@@ -1,3 +1,5 @@
+let $UUID = Java.loadClass("java.util.UUID")
+
 StartupEvents.registry('block', event => {
     event.create('drop_controller', "cardinal")
         // 碰撞箱：水平 3x3（-16到32像素，即-1格到+2格），高度1格（0到16像素）
@@ -47,9 +49,7 @@ StartupEvents.registry('block', event => {
     }).property(BlockProperties.AGE_3).material('wool').hardness(0).resistance(10).noDrops().displayName("发泡填充方块")
 
     event.create("energy_transport_terminal")
-        .placementState((/** @type {Internal.BlockPlaceContext} */ context, /** @type {Internal.Block} */ block) => {
-            context.setValue(BlockProperties.POWERED, $Boolean.valueOf(false));
-        })
+        .defaultCutout()
         .displayName("能量传输终端")
         .property(BlockProperties.POWERED)
         .blockEntity(

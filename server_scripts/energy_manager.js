@@ -52,3 +52,7 @@ BlockEvents.rightClicked("kubejs:energy_transport_terminal", event => {
     player.displayClientMessage(`§7终端模式已切换为: ${modeName}`, true)
     player.swing()
 })
+
+BlockEvents.placed("kubejs:energy_transport_terminal",event=>{
+    event.block.set("kubejs:energy_transport_terminal",{"powered":"false"})
+})
