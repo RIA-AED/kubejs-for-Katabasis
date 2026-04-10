@@ -22,7 +22,7 @@ StartupEvents.registry('block', event => {
         .displayName("空降控制台")
 
     event.create("ship_core").defaultCutout().material('medal').tagBlock('minecraft:mineable/pickaxe')
-        .blockEntity(blockEntity => global.shipCore(blockEntity))
+        .blockEntity(blockEntity => shipCore(blockEntity))
         .hardness(1)                // 硬度
         .resistance(20)              // 爆炸抗性
         .requiresTool(true)         // 需要工具挖掘

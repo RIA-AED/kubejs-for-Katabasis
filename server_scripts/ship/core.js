@@ -16,8 +16,8 @@ BlockEvents.rightClicked("kubejs:ship_core", event => {
     let blockEntity = level.getBlockEntity(block.pos)
     let energy = blockEntity.persistentData.energy ?? 0
     if (RespawnWeaknessApi.isWeakened(player)) {
-        if (energy > 0) {
-            energy--
+        if (energy >= config.SHIP_CORE.ENERGY_COST) {
+            energy -= config.SHIP_CORE.ENERGY_COST
             player.tell(`能量剩余: ${energy}`)
             RespawnWeaknessApi.recoverPlayer(player)
         } else {

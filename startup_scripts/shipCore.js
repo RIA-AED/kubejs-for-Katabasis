@@ -1,13 +1,14 @@
-global.shipCore = function (blockEntity) {
-    blockEntity.serverTick(20, Math.floor(Math.random() * 20), entity => {
+function shipCore(blockEntity) {
+    blockEntity.serverTick(startUpConfig.SHIP_CORE.ENERGY_RECOVERY_DELAY, Math.floor(Math.random() * startUpConfig.SHIP_CORE.ENERGY_RECOVERY_DELAY), entity => {
         const level = entity.level
         const server = level.server
         const data = server.persistentData
         const entityData = entity.persistentData
+        const config = startUpConfig.SHIP_CORE
 
         if (!entityData.energy) entityData.energy = 0
 
-        if (!data.base_core_pos || entityData.energy >= 100) return
+        if (!data.base_core_pos || entityData.energy >= config.MAX_ENERGY) return
 
         const baseCorePos = new BlockPos(
             data.base_core_pos.x,
@@ -30,8 +31,9 @@ global.shipCore = function (blockEntity) {
 
         if (!baseWorldPos || !worldPos) return
 
-        if (isInRange(worldPos, baseWorldPos, 30)) {
-            entityData.energy++
+        if (isInRange(worldPos, baseWorldPos, config.MAX_CHARGE_RANGE)) {
+            entityData.energy += config.ENERGY_RECOVERY_RATE
+            entityData.energy = Math.min(entityData.energy, config.MAX_ENERGY)
         }
     })
 }
