@@ -12,3 +12,10 @@ function isInRange(a, b, range) {
     let dz = a.z() - b.z()
     return dx*dx + dy*dy + dz*dz <= range*range
 }
+
+function getDistance(a, b) {
+    let dx = a.x() - b.x()
+    let dy = a.y() - b.y()
+    let dz = a.z() - b.z()
+    return Math.sqrt(dx * dx + dy * dy + dz * dz)
+}

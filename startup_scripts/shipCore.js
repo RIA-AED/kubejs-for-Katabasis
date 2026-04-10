@@ -30,10 +30,13 @@ function shipCore(blockEntity) {
         ])
 
         if (!baseWorldPos || !worldPos) return
-
+        entityData.distance = getDistance(worldPos, baseWorldPos)
         if (isInRange(worldPos, baseWorldPos, config.MAX_CHARGE_RANGE)) {
+            entityData.isPowered = true
             entityData.energy += config.ENERGY_RECOVERY_RATE
             entityData.energy = Math.min(entityData.energy, config.MAX_ENERGY)
+        } else {
+            entityData.isPowered = false
         }
     })
 }
