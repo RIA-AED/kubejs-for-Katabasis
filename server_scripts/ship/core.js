@@ -12,7 +12,7 @@ BlockEvents.rightClicked("kubejs:base_core", event => {
 
 BlockEvents.rightClicked("kubejs:ship_core", event => {
     const { player, block, level } = event
-    if (event.level.isClientSide() || RespawnWeaknessApi.isWeakened(player)) return
+    if (event.level.isClientSide() || !RespawnWeaknessApi.isWeakened(player)) return
     let blockEntity = level.getBlockEntity(block.pos)
     let energy = blockEntity.persistentData.energy ?? 0
     if (RespawnWeaknessApi.isWeakened(player)) {
