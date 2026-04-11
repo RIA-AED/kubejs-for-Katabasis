@@ -2,7 +2,7 @@ if (Platform.isClientEnvironment()) {
     let $VanillaGuiOverlay = Java.loadClass("net.minecraftforge.client.gui.overlay.VanillaGuiOverlay")
 
     // 版本号配置
-    let VERSION = "内部测试版本-72a6e4fb"
+    let VERSION = "内部测试版本 不代表最终品质-40e18d9c"
 
     ForgeModEvents.onEvent("net.minecraftforge.client.event.RegisterGuiOverlaysEvent", event => {
         event.registerBelow(
