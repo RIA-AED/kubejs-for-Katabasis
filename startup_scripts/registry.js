@@ -27,7 +27,7 @@ StartupEvents.registry('block', event => {
         .displayName("飞船核心")
     event.create("base_core").defaultCutout().material('medal').tagBlock('minecraft:mineable/pickaxe')
         .blockEntity(entity => { })
-        .hardness(1)                // 硬度
+        .hardness(-1)                // 硬度
         .resistance(20)              // 爆炸抗性
         .requiresTool(true)         // 需要工具挖掘
         .displayName("母舰核心")
