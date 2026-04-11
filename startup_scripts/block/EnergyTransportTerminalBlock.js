@@ -2,7 +2,7 @@
 let $UUID = Java.loadClass("java.util.UUID")
 let $Boolean = Java.loadClass("java.lang.Boolean")
 
-function EnergyTransportTerminalBlock() { }
+function EnergyTransportTerminalBlock() {}
 
 EnergyTransportTerminalBlock.rightClick =
     function (

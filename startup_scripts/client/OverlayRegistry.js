@@ -14,5 +14,11 @@ if (Platform.isClientEnvironment()) {
             (gui, guiGraphics, partialTick, screenWidth, screenHeight) =>
                 global.ship_core_overlay(gui, guiGraphics, partialTick, screenWidth, screenHeight)
         )
+
+        event.registerAboveAll(
+            "ammo_info_overlay",
+            (gui, guiGraphics, partialTick, screenWidth, screenHeight) =>
+                global.ammo_info_overlay(gui, guiGraphics, partialTick, screenWidth, screenHeight)
+        )
     })
 }

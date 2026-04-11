@@ -31,5 +31,5 @@ EnergyTransportTerminalBlock.findAllTerminal =
 BlockEvents.broken("kubejs:energy_transport_terminal", event => EnergyTransportTerminalBlock.broken(event))
 
 // 测试用
-ItemEvents.rightClicked("stick", event => EnergyTransportTerminalBlock.findAllTerminal(event))
+// ItemEvents.rightClicked("stick", event => EnergyTransportTerminalBlock.findAllTerminal(event))
 // 测试用

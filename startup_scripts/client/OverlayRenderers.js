@@ -1,9 +1,19 @@
 if (Platform.isClientEnvironment()) {
     let $Color = Java.loadClass("java.awt.Color")
+    let $FireModeInstance = Java.loadClass("com.vicmatskiv.pointblank.item.FireModeInstance")
+    let $GunItem = Java.loadClass("com.vicmatskiv.pointblank.item.GunItem")
+    let $Item = Java.loadClass("net.minecraft.world.item.Item")
+    let $ItemStack = Java.loadClass("net.minecraft.world.item.ItemStack")
+
+    let $GunItem$isCompatibleBullet = Java.class.forName("com.vicmatskiv.pointblank.item.GunItem")
+        .getDeclaredMethod("isCompatibleBullet", $Item, $ItemStack, $FireModeInstance)
+    $GunItem$isCompatibleBullet.setAccessible(true)
+
     // 报错记号
-    global.guiErrorFlags = {
+    global.guiErrorLogged = {
         armourInfo: false,
-        shipCore: false
+        shipCore: false,
+        ammoInfo: false
     }
 
     // 存储当前显示的核心信息
@@ -221,6 +231,86 @@ if (Platform.isClientEnvironment()) {
                 console.error("Stacktrace: " + e.stack)
 
                 global.guiErrorLogged.shipCore = true
+
+                if (Client.player) {
+                    Client.player.tell(Text.red("GUI 渲染发生异常，请检查控制台日志！"))
+                }
+            }
+        }
+    }
+
+    // 子弹数量信息Overlay
+    global.ammo_info_overlay = (
+        /** @type {Internal.ForgeGui} */ gui,
+        /** @type {GuiGraphics} */ guiGraphics,
+        partialTick,
+        screenWidth,
+        screenHeight
+    ) => {
+        try {
+            if (!guiGraphics) return
+            let player = Client.player
+            if (!player) return
+
+            let gunStack = player.getMainHandItem()
+            if (!(gunStack.item instanceof $GunItem)) return
+
+            /** @type {Internal.GunItem} */
+            let gunItem = gunStack.item
+            let ammoInfo = gunItem.getCompatibleAmmo().map(item => {
+                return {
+                    id: item.id,
+                    count: 0
+                }
+            })
+
+            let fireModeInstance = $GunItem.getFireModeInstance(gunStack)
+            let currentAmmo = $GunItem.getAmmo(gunStack, fireModeInstance)
+
+            for (let inventoryItem of player.getInventory().items) {
+                if (!$GunItem$isCompatibleBullet.invoke(null, inventoryItem.item, gunStack, fireModeInstance)) continue
+
+                let foundAmmoInfo = ammoInfo.find(item => item.id == inventoryItem.id)
+                if (foundAmmoInfo != null) {
+                    foundAmmoInfo.count += inventoryItem.count
+                }
+            }
+
+            let font = gui.getFont()
+            let poseStack = guiGraphics.pose()
+            let drawStringFloat = "drawString(net.minecraft.client.gui.Font,java.lang.String,float,float,int,boolean)"
+
+            let rowHeight = 22
+            let totalHeight = ammoInfo.length * rowHeight
+            let yStart = (screenHeight - totalHeight) / 2 // 垂直居中
+
+            // 设置右对齐的边距
+            let rightMargin = 30
+            let xBase = screenWidth - rightMargin
+
+            let moveY = 0
+            ammoInfo.forEach(info => {
+                let y = yStart + moveY
+                moveY += rowHeight
+                let itemStack = Item.of(info.id)
+
+                // 1. 渲染子弹图标
+                guiGraphics.renderFakeItem(itemStack, xBase - 20, y)
+
+                // 2. 渲染数量
+                let countColor = info.count > 0 ? 0xFFFFFF : 0xFF5555
+                let text = `×${info.count}`
+
+                // 执行绘制
+                guiGraphics[drawStringFloat](font, text, xBase, y + 5, countColor, true)
+            })
+        } catch (e) {
+            if (!global.guiErrorLogged.ammoInfo) {
+                console.error("Critical error in GUI Overlay rendering!")
+                console.error("Error details: " + e)
+                console.error("Stacktrace: " + e.stack)
+
+                global.guiErrorLogged.ammoInfo = true
 
                 if (Client.player) {
                     Client.player.tell(Text.red("GUI 渲染发生异常，请检查控制台日志！"))
