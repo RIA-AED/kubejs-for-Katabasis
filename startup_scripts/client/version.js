@@ -1,4 +1,4 @@
-if (Platform.isClientEnvironment) {
+if (Platform.isClientEnvironment()) {
     let $VanillaGuiOverlay = Java.loadClass("net.minecraftforge.client.gui.overlay.VanillaGuiOverlay")
 
     // 版本号配置
