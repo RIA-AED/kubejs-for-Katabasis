@@ -257,15 +257,17 @@ if (Platform.isClientEnvironment()) {
 
             /** @type {Internal.GunItem} */
             let gunItem = gunStack.item
+
+            let fireModeInstance = $GunItem.getFireModeInstance(gunStack)
+            let maxCapacity = gunItem.getMaxAmmoCapacity(gunStack, fireModeInstance)
+            let currentAmmo = $GunItem.getAmmo(gunStack, fireModeInstance)
+            
             let ammoInfo = gunItem.getCompatibleAmmo().map(item => {
                 return {
                     id: item.id,
                     count: 0
                 }
             })
-
-            let fireModeInstance = $GunItem.getFireModeInstance(gunStack)
-            let currentAmmo = $GunItem.getAmmo(gunStack, fireModeInstance)
 
             for (let inventoryItem of player.getInventory().items) {
                 if (!$GunItem$isCompatibleBullet.invoke(null, inventoryItem.item, gunStack, fireModeInstance)) continue
@@ -295,12 +297,23 @@ if (Platform.isClientEnvironment()) {
                 let itemStack = Item.of(info.id)
 
                 // 1. 渲染子弹图标
-                guiGraphics.renderFakeItem(itemStack, xBase - 20, y)
+                guiGraphics.renderFakeItem(itemStack, xBase - 15, y)
 
+                let time = Date.now()
+                let countColor
                 // 2. 渲染数量
-                let countColor = info.count > 0 ? 0xFFFFFF : 0xFF5555
-                let text = `×${info.count}`
+                if (info.count > 0) {
+                    let ratio = Math.min(info.count / 64, 1)
+                    countColor = $Color.getHSBColor(ratio / 3, 1.0, 1.0).getRGB()
+                } else {
+                    let wave = Math.sin(time / 200);
+                    let alpha = Math.floor(((wave + 1) / 2) * 155) + 100;
 
+                    let redBase = $Color.getHSBColor(0.0, 1.0, 1.0).getRGB()
+                    countColor = (alpha << 24) | (redBase & 0x00FFFFFF)
+                }
+
+                let text = `×${info.count}`
                 // 执行绘制
                 guiGraphics[drawStringFloat](font, text, xBase, y + 5, countColor, true)
             })
