@@ -128,6 +128,9 @@ StartupEvents.registry('item', event => {
     event.create("cdu_drop").displayName("CDU空投")
     event.create("cannon_drop").displayName("机炮空投")
 
+    event.create("empty_cdu_drop").displayName("空的CDU空投")
+    event.create("empty_cannon_drop").displayName("空的机炮空投")
+
     event.create("spore_biomass", "basic").displayName('菌染生物质团')
     event.create("fibrosis_biomass", "basic").displayName('纤维化生物质团')
     event.create("carbonization_biomass", "basic").displayName('碳化生物质团')

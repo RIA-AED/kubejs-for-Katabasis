@@ -20,7 +20,7 @@ ServerEvents.recipes(event => {
     event.remove({output: 'pointblank:printer'})
     event.remove({output: 'pointblank:processor'})
 
-    //生物质团配方
+//生物质团配方
     //菌染
     event.shapeless('4x kubejs:spore_biomass', '4x #katabasis:spore_tissue_t1')
     event.shapeless('6x kubejs:spore_biomass', ['2x #katabasis:spore_tissue_t1', '2x #katabasis:spore_tissue_t2'])
@@ -88,7 +88,7 @@ ServerEvents.recipes(event => {
     event.recipes.create.mixing("kubejs:carbonization_biomass",['kubejs:spore_biomass','16x #minecraft:coals',Fluid.of('create_things_and_misc:slime', 250)])
 
 
-    //道具配方
+//道具配方
     //填补发泡
     event.shaped("kubejs:filler_block_1", [
 		'ABA',
@@ -109,11 +109,46 @@ ServerEvents.recipes(event => {
 		A: 'minecraft:gravel',
         C:Item.of('protection_pixel:watertank', '{Damage:0}')
     })
-    //机炮空投
     
-    //CDU空投
+    //空的机炮空投
+    event.recipes.create.mechanical_crafting("kubejs:empty_cannon_drop", [
+        "ABBBA",
+        "CDDEC",
+        "CDGFC",
+        "AHIHA",
+        " BJB "
+    ], {
+        A: 'kinetic_pixel:andesitealloycompressionsheet',B: 'alloyed:bronze_sheet',C: 'alloyed:steel_sheet',
+        D:'createbigcannons:steel_autocannon_barrel',E:'createbigcannons:steel_autocannon_recoil_spring',F:'createbigcannons:steel_autocannon_breech',
+        G:'minecraft:hopper',H:'minecraft:lever',I:'createbigcannons:cannon_mount',J:Item.of('minecraft:firework_rocket', '{Fireworks:{Flight:1b}}')
+    })
+    //机炮空投
+    event.recipes.createSequencedAssembly(
+        'kubejs:cannon_drop',
+        "kubejs:empty_cannon_drop", [
+        event.recipes.createDeploying("kubejs:empty_cannon_drop",["kubejs:empty_cannon_drop",Item.of('createbigcannons:autocannon_cartridge', '{Projectile:{Count:1b,id:"createbigcannons:flak_autocannon_round",tag:{Fuze:{Count:1b,id:"createbigcannons:impact_fuze"},Tracer:1b}}}')])
+    ]).transitionalItem("kubejs:empty_cannon_drop").loops(64)
 
-    //工业配方
+    //空的CDU空投
+    event.recipes.create.mechanical_crafting('kubejs:empty_cdu_drop', [
+        "ABBBA",
+        "CHGHC",
+        "CDFDC",
+        "ADEDA",
+        " BJB "
+    ], {
+        A: 'kinetic_pixel:andesitealloycompressionsheet',B: 'alloyed:bronze_sheet',C: 'alloyed:steel_sheet',
+        D:'spore:compound_plate',E:'spore:circuit_board',F:'create:encased_fan',
+        G:'create:nozzle',H:'spore:ice_canister',J:Item.of('minecraft:firework_rocket', '{Fireworks:{Flight:1b}}')
+    })
+    //CDU空投
+    event.recipes.createSequencedAssembly(
+        'kubejs:cdu_drop',
+        'kubejs:empty_cdu_drop', [
+        event.recipes.createDeploying('kubejs:empty_cdu_drop',['kubejs:empty_cdu_drop','minecraft:ice'])
+    ]).transitionalItem('kubejs:empty_cdu_drop').loops(64)
+
+//工业配方
     //骨头
     Ingredient.of(/(claw_fr|armor_fr|shield_fr|spine)/).itemIds.forEach(id => {
         event.shapeless('3x minecraft:bone',Item.of(id))
@@ -135,4 +170,126 @@ ServerEvents.recipes(event => {
     })
     //苔藓
     event.recipes.create.mixing(['8x immersive_weathering:moss_clump',Fluid.of('minecraft:water', 250)],['immersive_weathering:moss_clump','kubejs:activation_biomass',Fluid.of('create_things_and_misc:slime', 250)])
+    //牛奶
+    event.recipes.create.mixing(Fluid.of('minecraft:milk', 500),['kubejs:activation_biomass',Fluid.of('minecraft:milk', 250)])
+
+//动力甲
+    //盔甲挂架
+    event.replaceInput({output:'protection_pixel:armorhanger'},'minecraft:shroomlight','quark:blaze_lantern')
+
+    //燃料棒
+    event.remove({output:Item.of('protection_pixel:flarerod', '{Damage:0}')})
+    event.shaped(Item.of('protection_pixel:flarerod', '{Damage:0}'), [
+		' BA',
+		'BCB',
+		'AB '
+	], {
+		A: 'kinetic_pixel:andesitealloycompressionsheet',
+		B: 'minecraft:blaze_rod',
+        C: 'kubejs:activation_biomass'
+    })
+
+    //胸甲内衬
+    event.remove({output:'protection_pixel:chestplatelining'})
+    event.shaped('protection_pixel:chestplatelining', [
+		'ABA',
+		'BCB',
+		'DBD'
+	], {
+		A: 'createaddition:iron_rod',
+		B: 'kubejs:calcification_biomass',
+        C: Item.of('minecraft:iron_chestplate', '{Damage:0}'),
+        D: 'kinetic_pixel:andesitealloycompressionsheet'
+    })
+    
+    //腿甲内衬
+    event.remove({output:'protection_pixel:leggingslining'})
+    event.shaped('protection_pixel:leggingslining', [
+		'ABA',
+		'BCB',
+		'DBD'
+	], {
+		D: 'createaddition:iron_rod',
+		B: 'kubejs:calcification_biomass',
+        C: Item.of('minecraft:iron_leggings', '{Damage:0}'),
+        A: 'kinetic_pixel:andesitealloycompressionsheet'
+    })
+
+    //瘟疫头盔
+    event.remove({output:Item.of('protection_pixel:plague_helmet', '{Damage:0}')})
+    event.recipes.create.mechanical_crafting(Item.of('protection_pixel:plague_helmet', '{Damage:0}'), [
+        " ABA ",
+        "CFEFC",
+        "HDGDH",
+        "AIJIA"
+    ], {
+        A: 'create:brass_sheet',B: 'create:brass_ingot',C: 'create:iron_sheet',
+        F:'create:propeller',G:Item.of('minecraft:iron_helmet', '{Damage:0}'),D:'quark:framed_glass_pane',
+        E:'spore:altered_spleen',H:'spore:fleshy_bone',I:'spore:plated_muscle',J:'spore:spine_fragment'
+    })
+
+    //枪骑兵头盔
+    event.remove({output:Item.of('protection_pixel:lancer_helmet', '{Damage:0}')})
+    event.recipes.create.mechanical_crafting(Item.of('protection_pixel:lancer_helmet', '{Damage:0}'), [
+        " ABA ",
+        "AFGFA",
+        "HDEDH",
+        "AIJIA"
+    ], {
+        A: 'create:brass_sheet',B: 'create:brass_ingot',
+        D:'quark:framed_glass_pane',E:Item.of('minecraft:iron_helmet', '{Damage:0}'),F:'spore:tendons',
+        G:'create:cogwheel',H:'spore:fleshy_bone',I:'spore:plated_muscle',J:'spore:spine_fragment'
+    })
+
+    //锤头头盔
+    event.remove({output:Item.of('protection_pixel:hammer_helmet', '{Damage:0}')})
+    event.recipes.create.mechanical_crafting(Item.of('protection_pixel:hammer_helmet', '{Damage:0}'), [
+        " ABA ",
+        "AFFFA",
+        "HDEDH",
+        "AIJIA"
+    ], {
+        A: 'create:brass_sheet',B: 'create:brass_ingot',
+        D:'quark:framed_glass_pane',E:Item.of('minecraft:iron_helmet', '{Damage:0}'),F:'spore:armor_plate',
+        H:'spore:fleshy_bone',I:'spore:plated_muscle',J:'spore:spine_fragment'
+    })
+
+    //捕猎者头盔
+    event.remove({output:Item.of('protection_pixel:hunter_helmet', '{Damage:0}')})
+    event.recipes.create.mechanical_crafting(Item.of('protection_pixel:hunter_helmet', '{Damage:0}'), [
+        "CA AC",
+        " JBJ ",
+        "HDEGH",
+        "AIJIA"
+    ], {
+        A: 'create:brass_sheet',B: 'create:brass_ingot',C: 'createaddition:electrum_wire',
+        D: 'spore:vigil_eye',E: 'minecraft:iron_helmet',
+        G:'spore:nerves',H:'spore:fleshy_bone',I:'spore:plated_muscle',J:'spore:spine_fragment'
+    })
+
+    //全封闭头盔
+    event.remove({output:Item.of('protection_pixel:closed_helmet', '{Damage:0}')})
+    event.recipes.create.mechanical_crafting(Item.of('protection_pixel:closed_helmet', '{Damage:0}'), [
+        " DDD ",
+        "DCBCD",
+        "AJEJA",
+        "AIJIA"
+    ], {
+        A: 'create:brass_sheet',B: 'create:brass_ingot',C: 'spore:alveolic_sack',
+        D: 'minecraft:glass_pane',E: 'minecraft:iron_helmet',
+        I:'spore:plated_muscle',J:'spore:spine_fragment'
+    })
+
+    //血囚头盔
+    event.remove({output:Item.of('protection_pixel:bloodprisoner_helmet', '{Damage:0}')})
+    event.recipes.create.mechanical_crafting(Item.of('protection_pixel:bloodprisoner_helmet', '{Damage:0}'), [
+        " ABA ",
+        "FADAF",
+        "HGEGH",
+        "AIJIA"
+    ], {
+        A: 'create:brass_sheet',B: 'create:brass_ingot',
+        D: 'quark:framed_glass_pane',E: 'minecraft:iron_helmet',F: 'kinetic_pixel:andesitealloycompressionsheet',
+        G: 'spore:mutated_heart',I:'spore:plated_muscle',J:'spore:spine_fragment',H: 'spore:fleshy_bone'
+    })
 })
