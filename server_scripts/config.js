@@ -12,3 +12,8 @@ let config = {
 }
 
 global.config = config
+
+PlayerEvents.loggedIn(event => {
+    let player = event.player
+    player.sendData("serverShipCfg", config.SHIP_CORE)
+})
