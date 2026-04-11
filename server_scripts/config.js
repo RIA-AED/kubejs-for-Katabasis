@@ -2,6 +2,12 @@ let config = {
     "SHIP_CORE": {
         "ENERGY_COST": 1,
         "MAX_CHARGE_RANGE": 30
+    },
+    // 能量传输终端设置
+    "EnergyTransportTerminal": {
+        "maxStoredEnergy": 10000,
+        "energyPerRequest": 10000,
+        "maxDistance": 5
     }
 }
 

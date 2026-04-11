@@ -1,18 +1,22 @@
-if (Platform.isClientEnvironment) {
-    let $VanillaGuiOverlay = Java.loadClass("net.minecraftforge.client.gui.overlay.VanillaGuiOverlay")
+if (Platform.isClientEnvironment()) {
     let $Color = Java.loadClass("java.awt.Color")
+    // 报错记号
+    global.guiErrorFlags = {
+        armourInfo: false,
+        shipCore: false
+    }
 
-    ForgeModEvents.onEvent("net.minecraftforge.client.event.RegisterGuiOverlaysEvent", event => {
-        event.registerBelow(
-            $VanillaGuiOverlay.CHAT_PANEL.id(),
-            "armour_info_overlay",
-            (gui, guiGraphics, partialTick, screenWidth, screenHeight) =>
-                global.armour_info_overlay(gui, guiGraphics, partialTick, screenWidth, screenHeight)
-        )
-    })
+    // 存储当前显示的核心信息
+    global.shipCoreInfo = {
+        energy: 0,
+        distance: -1,
+        connected: false,
+        maxRange: 0,
+        pos: null,
+        lastUpdate: 0
+    }
 
-    global.guiErrorLogged = false;
-
+    // 护甲信息Overlay
     global.armour_info_overlay = (
         /** @type {Internal.ForgeGui} */ gui,
         /** @type {GuiGraphics} */ guiGraphics,
@@ -138,12 +142,85 @@ if (Platform.isClientEnvironment) {
                 currentY += data.rowHeight
             })
         } catch (e) {
-            if (!global.guiErrorLogged) {
+            if (!global.guiErrorLogged.armourInfo) {
                 console.error("Critical error in GUI Overlay rendering!")
                 console.error("Error details: " + e)
                 console.error("Stacktrace: " + e.stack)
 
-                global.guiErrorLogged = true
+                global.guiErrorLogged.armourInfo = true
+
+                if (Client.player) {
+                    Client.player.tell(Text.red("GUI 渲染发生异常，请检查控制台日志！"))
+                }
+            }
+        }
+    }
+
+    // 飞船核心Overlay
+    global.ship_core_overlay = (
+        /** @type {Internal.ForgeGui} */ gui,
+        /** @type {GuiGraphics} */ guiGraphics,
+        partialTick,
+        screenWidth,
+        screenHeight
+    ) => {
+        try {
+            if (!guiGraphics) return
+            let player = Client.player
+            if (!player) return
+
+            // 检查数据是否过期（超过1秒未更新则不显示）
+            let now = Date.now()
+            if (now - global.shipCoreInfo.lastUpdate > 250) return
+
+            let font = gui.getFont()
+            let drawStringFloat = "drawString(net.minecraft.client.gui.Font,java.lang.String,float,float,int,boolean)"
+
+            // 准星位置
+            let crosshairX = screenWidth / 2
+            let crosshairY = screenHeight / 2
+
+            // 显示位置：准星左下角
+            let x = crosshairX + 15
+            let y = crosshairY + 15
+
+            // 背景
+            let padding = 10
+            let bgWidth = 100
+            let bgHeight = 55
+            guiGraphics.fill(x - padding, y - padding, x + bgWidth, y + bgHeight, 0xAA000000 | 0)
+
+            // 标题
+            guiGraphics[drawStringFloat](font, "飞船核心", x, y, 0x00FFFF, true)
+            y += 12
+
+            // 能量
+            let energyText = `能量: ${global.shipCoreInfo.energy}`
+            let energyColor = global.shipCoreInfo.energy > 0 ? 0x00FF00 : 0xFF0000
+            guiGraphics[drawStringFloat](font, energyText, x, y, energyColor, true)
+            y += 10
+
+            // 连接状态
+            let connectedText = global.shipCoreInfo.connected ? "已连接母舰核心" : "未连接母舰核心"
+            let connectedColor = global.shipCoreInfo.connected ? 0x00FF00 : 0xFF4444
+            guiGraphics[drawStringFloat](font, connectedText, x, y, connectedColor, true)
+            y += 10
+
+            // 距离（始终显示）
+            let info = global.shipCoreInfo
+            let distanceText = info.distance >= 0
+                ? `距离: ${info.distance}m / ${info.maxRange}m`
+                : "距离: 未知"
+            let distanceColor = info.connected ? 0x00FF00 : 0xFF4444
+            guiGraphics[drawStringFloat](font, distanceText, x, y, distanceColor, true)
+
+        } catch (e) {
+            if (!global.guiErrorLogged.shipCore) {
+                console.error("Critical error in GUI Overlay rendering!")
+                console.error("Error details: " + e)
+                console.error("Stacktrace: " + e.stack)
+
+                global.guiErrorLogged.shipCore = true
 
                 if (Client.player) {
                     Client.player.tell(Text.red("GUI 渲染发生异常，请检查控制台日志！"))

@@ -1,5 +1,3 @@
-let $UUID = Java.loadClass("java.util.UUID")
-
 StartupEvents.registry('block', event => {
     event.create('drop_controller', "cardinal")
         // 碰撞箱：水平 3x3（-16到32像素，即-1格到+2格），高度1格（0到16像素）
@@ -50,147 +48,12 @@ StartupEvents.registry('block', event => {
 
     event.create("energy_transport_terminal")
         .defaultCutout()
-        .displayName("能量传输终端")
         .property(BlockProperties.POWERED)
-        .blockEntity(
-            /** @type {Internal.BlockEntityInfo} */ info => {
-                info.attachCapability(
-                    CapabilityBuilder.ENERGY.customBlockEntity()
-                        .canExtract(() => true)
-                        .canReceive(() => true)
-                        .extractEnergy((be, amount, simulate) => {
-                            return global.extractEnergy(be, amount, simulate)
-                        })
-                        .receiveEnergy((be, amount, simulate) => {
-                            return global.receiveEnergy(be, amount, simulate)
-                        })
-                        .getEnergyStored(be => {
-                            return be.persistentData.getInt("energy")
-                        })
-                        .getMaxEnergyStored(() => global.terminalInfo.maxStoredEnergy)
-                )
-                    .tick(20, 0, (/** @type {Internal.BlockEntityJS} */ be) => {
-                        let { blockPos, level } = be
-                        if (level.clientSide) return
-
-                        let localPosLong = blockPos.asLong()
-                        let realPosLong = localPosLong
-                        let ship = VSHelper.getShipByBlockPos(level, blockPos)
-
-                        if (ship != null) {
-                            let vec = VSHelper.shipPosToWorldPos(ship, Vec3d.atCenterOf(blockPos))
-                            realPosLong = BlockPos.containing(vec.x(), vec.y(), vec.z()).asLong()
-                        }
-
-                        let uuid = null
-                        if (!be.persistentData.contains("pid")) {
-                            let foundData = global.terminals.find(obj => {
-                                return obj.pos == realPosLong
-                            })
-
-                            if (foundData != null) {
-                                uuid = foundData.uuid
-                            } else {
-                                uuid = $UUID.randomUUID()
-                                global.terminals.push({
-                                    uuid: uuid,
-                                    pos: realPosLong,
-                                    shipPos: localPosLong
-                                })
-                            }
-
-                            be.persistentData.putUUID("pid", uuid)
-                            be.setChanged()
-                            return
-                        }
-
-                        uuid = be.persistentData.getUUID("pid")
-                        let foundData = global.terminals.find(obj => {
-                            return obj.uuid.toString() == uuid.toString()
-                        })
-
-                        if (foundData != null) {
-                            if (foundData.pos != realPosLong) foundData.pos = realPosLong
-                            if (foundData.shipPos != localPosLong) foundData.shipPos = localPosLong
-                        } else {
-                            global.terminals.push({
-                                uuid: uuid,
-                                pos: realPosLong,
-                                shipPos: localPosLong
-                            })
-                        }
-
-                        let mode = be.persistentData.getInt("mode")
-                        if (mode == 0) {
-                            let currentEnergy = be.persistentData.getInt("energy")
-                            let maxEnergy = global.terminalInfo.maxStoredEnergy
-
-                            if (currentEnergy < maxEnergy) {
-                                chargeFromNetwork(be, realPosLong)
-                            }
-                        }
-                    }
-                    )
-            })
+        .defaultState(state => EnergyTransportTerminalBlock.defaultState(state))
+        .rightClick(event => EnergyTransportTerminalBlock.rightClick(event))
+        .blockEntity(info => EnergyTransportTerminalBlock.blockEntity(info))
+        .displayName("能量传输终端")
 })
-
-function chargeFromNetwork(selfBe, selfWorldPosLong) {
-    let level = selfBe.level
-    let selfUuid = selfBe.persistentData.getUUID("pid").toString()
-    let selfPos = BlockPos.of(selfWorldPosLong)
-
-    let spaceNeeded = global.terminalInfo.maxStoredEnergy - selfBe.persistentData.getInt("energy")
-    if (spaceNeeded <= 0) return
-
-    for (let target of global.terminals) {
-        if (target.uuid.toString() == selfUuid) continue
-        let targetPos = BlockPos.of(target.pos)
-        let dist = targetPos.distToCenterSqr(selfPos.x, selfPos.y, selfPos.z)
-        if (dist > Math.pow(global.terminalInfo.distance, 2)) continue
-
-        let targetLocalPos = BlockPos.of(target.shipPos)
-        if (!level.isLoaded(targetLocalPos)) continue
-
-        let targetBe = level.getBlockEntity(targetLocalPos)
-
-        if (targetBe && targetBe.type == selfBe.type) {
-            let targetMode = targetBe.persistentData.getInt("mode")
-            if (targetMode != 1) continue
-
-            let targetEnergy = targetBe.persistentData.getInt("energy")
-            if (targetEnergy > 0) {
-                let transferAmount = Math.min(global.terminalInfo.energyPerRequest, spaceNeeded, targetEnergy)
-
-                global.extractEnergy(targetBe, transferAmount, false)
-                global.receiveEnergy(selfBe, transferAmount, false)
-
-                targetBe.setChanged()
-                selfBe.setChanged()
-
-                spaceNeeded -= transferAmount
-                if (spaceNeeded <= 0) break
-            }
-        }
-    }
-}
-
-global.extractEnergy = (/** @type {Internal.BlockEntityJS} */ be, amount, simulate) => {
-    let energy = be.persistentData.getInt("energy")
-    let extracted = Math.min(energy, amount)
-    if (!simulate) {
-        be.persistentData.putInt("energy", energy - extracted)
-    }
-    return extracted
-}
-
-global.receiveEnergy = (/** @type {Internal.BlockEntityJS} */ be, amount, simulate) => {
-    let energy = be.persistentData.getInt("energy")
-    let received = Math.min(global.terminalInfo.maxStoredEnergy - energy, amount)
-    if (!simulate) {
-        be.persistentData.putInt("energy", energy + received)
-    }
-    return received
-}
 
 StartupEvents.registry('entity_type', event => {
     event.create('landing_pod', 'entityjs:living')
