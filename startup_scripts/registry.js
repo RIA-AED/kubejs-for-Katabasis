@@ -142,4 +142,6 @@ StartupEvents.registry('item', event => {
     event.create("high_energy_biomass", "basic").displayName('高能化生物质团')
 
     event.create("tumor", "basic").displayName('肿瘤')
+
+    event.create("copter").maxDamage(100).displayName("竹蜻蜓")
 })
