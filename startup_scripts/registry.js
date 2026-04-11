@@ -44,7 +44,9 @@ StartupEvents.registry('block', event => {
         else {
             tick.block.set("minecraft:air")
         }
-    }).property(BlockProperties.AGE_3).material('wool').hardness(0).resistance(10).noDrops().displayName("发泡填充方块")
+    })
+        .suffocating(false)
+        .property(BlockProperties.AGE_3).material('wool').hardness(0).resistance(10).noDrops().displayName("发泡填充方块")
 
     event.create("energy_transport_terminal")
         .defaultCutout()

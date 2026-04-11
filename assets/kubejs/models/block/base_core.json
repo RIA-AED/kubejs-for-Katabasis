@@ -2,9 +2,9 @@
 	"credit": "Made with Blockbench",
 	"textures": {
 		"1": "kubejs:block/ship_core_2",
-		"2": "kubejs:block/base_core",
+		"2": "kubejs:block/ship_core_1",
 		"3": "kubejs:block/base_core",
-		"particle": "kubejs:block/base_core"
+		"particle": "kubejs:block/ship_core_1"
 	},
 	"elements": [
 		{
