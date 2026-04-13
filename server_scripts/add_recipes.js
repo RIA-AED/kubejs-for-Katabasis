@@ -292,4 +292,69 @@ ServerEvents.recipes(event => {
         D: 'quark:framed_glass_pane',E: 'minecraft:iron_helmet',F: 'kinetic_pixel:andesitealloycompressionsheet',
         G: 'spore:mutated_heart',I:'spore:plated_muscle',J:'spore:spine_fragment',H: 'spore:fleshy_bone'
     })
+
+    //托萨奇头盔
+    event.remove({output:Item.of('protection_pixel:tosaki_helmet', '{Damage:0}')})
+    event.recipes.create.mechanical_crafting(Item.of('protection_pixel:tosaki_helmet', '{Damage:0}'), [
+        " ABA ",
+        "FADAF",
+        "HCEGH",
+        "AIJIA"
+    ], {
+        A: 'protection_pixel:heatresistantceramicsheet',B: 'minecraft:iron_ingot',C:'quark:black_framed_glass_pane',
+        D: 'spore:nerves',E: 'minecraft:iron_helmet',F: 'kinetic_pixel:andesitealloycompressionsheet',
+        G: Item.of('spore:vigil_eye', '{Damage:0}'),I:'spore:plated_muscle',J:'spore:spine_fragment',H: 'spore:fleshy_bone'
+    })
+
+    //弹弓腿甲
+    event.remove({output:Item.of('protection_pixel:slingshot_leggings', '{Damage:0}')})
+    event.recipes.create.mechanical_crafting(Item.of('protection_pixel:slingshot_leggings', '{Damage:0}'), [
+        " FBF ",
+        "AJDJA",
+        "GG GG",
+        "AI IA"
+    ], {
+        A: 'create:brass_sheet',B: 'spore:spine_fragment',
+        D: 'protection_pixel:leggingslining',F: 'create:brass_ingot',
+        G: 'spore:tendons',I:'spore:armor_plate',J:'spore:hardened_bind'
+    })
+    
+    //锚点腿甲
+    event.remove({output:Item.of('protection_pixel:anchorpoint_leggings', '{Damage:0}')})
+    event.recipes.create.mechanical_crafting(Item.of('protection_pixel:anchorpoint_leggings', '{Damage:0}'), [
+        " FBF ",
+        "AJDJA",
+        "AG GA",
+        "CI IC"
+    ], {
+        A: 'create:brass_sheet',B: 'spore:spine_fragment',C:'spore:spike',
+        D: 'protection_pixel:leggingslining',F: 'create:brass_ingot',
+        G: 'spore:plated_muscle',I:'spore:armor_plate',J:'spore:hardened_bind'
+    })
+
+    //浮力腿甲
+    event.remove({output:Item.of('protection_pixel:buoyancy_leggings', '{Damage:0}')})
+    event.recipes.create.mechanical_crafting(Item.of('protection_pixel:buoyancy_leggings', '{Damage:0}'), [
+        " FBF ",
+        "AJDJA",
+        "IG GI",
+        "AC CA"
+    ], {
+        A: 'create:brass_sheet',B: 'spore:spine_fragment',C:'spore:wing_membrane',
+        D: 'protection_pixel:leggingslining',F: 'create:brass_ingot',
+        G: 'create:propeller',I:'spore:alveolic_sack',J:'spore:hardened_bind'
+    })
+
+    //托萨奇腿甲
+    event.remove({output:Item.of('protection_pixel:tosaki_leggings', '{Damage:0}')})
+    event.recipes.create.mechanical_crafting(Item.of('protection_pixel:tosaki_leggings', '{Damage:0}'), [
+        " FBF ",
+        "AJDJA",
+        "AG GA",
+        "CI IC"
+    ], {
+        A: 'protection_pixel:heatresistantceramicsheet',B: 'spore:spine_fragment',C:'spore:wing_membrane',
+        D: 'protection_pixel:leggingslining',F: 'minecraft:iron_ingot',
+        G: 'spore:tendons',I:'spore:armor_plate',J:'spore:hardened_bind'
+    })
 })
