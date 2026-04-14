@@ -1,21 +1,21 @@
 function FillerProjectileEntity() { }
 
-global.FillerProjectileEntity$item =
-    (
+FillerProjectileEntity.item =
+    function (
     /** @type {Internal.ProjectileItemBuilder} */ builder,
     /** @type {number} */ type
-    ) => {
+    ) {
         builder
             .canThrow(true)
             .projectileVelocity(1.5)
             .displayName(type == 1 ? "发泡手榴弹(填补型)" : "发泡手榴弹(扩展型)")
     }
 
-global.FillerProjectileEntity$onHitBlock =
-    (
+FillerProjectileEntity.onHitBlock =
+    function (
         /** @type {Internal.ContextUtils$ProjectileBlockHitContext} */ context,
         /** @type {number} */ type
-    ) => {
+    ) {
         let { result, entity } = context
         let { blockPos, direction } = result
         let { level, server } = entity

@@ -124,12 +124,12 @@ StartupEvents.registry('entity_type', event => {
     // })
 
     event.create("filler_1", "entityjs:projectile")
-        .item(builder => global.FillerProjectileEntity$item(builder, 1))
-        .onHitBlock(context => global.FillerProjectileEntity$onHitBlock(context, 1))
+        .item(builder => FillerProjectileEntity.item(builder, 1))
+        .onHitBlock(context => FillerProjectileEntity.onHitBlock(context, 1))
 
     event.create("filler_2", "entityjs:projectile")
-        .item(builder => global.FillerProjectileEntity$item(builder, 2))
-        .onHitBlock(context => global.FillerProjectileEntity$onHitBlock(context, 2))
+        .item(builder => FillerProjectileEntity.item(builder, 2))
+        .onHitBlock(context => FillerProjectileEntity.onHitBlock(context, 2))
 })
 
 StartupEvents.registry('item', event => {
