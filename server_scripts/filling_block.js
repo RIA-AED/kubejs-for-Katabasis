@@ -29,6 +29,20 @@ BlockEvents.rightClicked(event => {
     if (event.block.hasTag("spore:removable_foliage")) event.player.tell(11)
 })
 
+global.fillingBlock =
+    (
+        /** @type {Internal.BlockContainerJS} */ block,
+        /** @type {Internal.MinecraftServer} */ server,
+        /** @type {number} */ type
+    ) => {
+        if (type == 1) filling_block_1(block, server)
+        else if (type == 2) filling_block_2(block, server)
+        else {
+            throw new Error("Type is not either 1 or 2!")
+        }
+    }
+
+
 /**
  * 填坑
  * @param {Internal.BlockContainerJS} block
