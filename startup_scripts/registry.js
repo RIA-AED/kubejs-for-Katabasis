@@ -122,6 +122,14 @@ StartupEvents.registry('entity_type', event => {
     //     item.backgroundColor(0xFF0000)
     //     item.highlightColor(0xFFFFFF)
     // })
+
+    event.create("filler_1", "entityjs:projectile")
+        .item(builder => FillerProjectileEntity.item(builder, 1))
+        .onHitBlock(context => FillerProjectileEntity.onHitBlock(context, 1))
+
+    event.create("filler_2", "entityjs:projectile")
+        .item(builder => FillerProjectileEntity.item(builder, 2))
+        .onHitBlock(context => FillerProjectileEntity.onHitBlock(context, 2))
 })
 
 StartupEvents.registry('item', event => {
