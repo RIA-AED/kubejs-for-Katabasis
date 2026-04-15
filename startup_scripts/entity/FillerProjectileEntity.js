@@ -6,9 +6,23 @@ FillerProjectileEntity.item =
     /** @type {number} */ type
     ) {
         builder
+            .use((level, player, hand) => this.use(level, player, hand))
             .canThrow(true)
             .projectileVelocity(1.5)
             .displayName(type == 1 ? "发泡手榴弹(填补型)" : "发泡手榴弹(扩展型)")
+    }
+
+/** @returns {boolean} */
+FillerProjectileEntity.use =
+    function (
+        /** @type {Internal.Level} */ level,
+        /** @type {Internal.Player} */ player,
+        /** @type {Internal.InteractionHand} */ hand
+    ) {
+        let itemInHand = player.getItemInHand(hand)
+        player.getCooldowns().addCooldown(itemInHand, 60)
+
+        return true
     }
 
 FillerProjectileEntity.onHitBlock =
