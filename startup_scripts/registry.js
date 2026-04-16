@@ -151,6 +151,8 @@ StartupEvents.registry('item', event => {
 
     event.create("tumor", "basic").displayName('肿瘤')
 
+    event.create("posthumous_papers").displayName("散乱的记述")
+
     event.create("copter")
     .maxDamage(100)
     .use((level, player, hand) => CopterItem.use(level, player, hand))
