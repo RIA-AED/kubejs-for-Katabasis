@@ -59,6 +59,11 @@ StartupEvents.registry('block', event => {
             if (nowAge == 7) {
                 tick.block.set("minecraft:air")
             }
+            if (nowAge == 0) {
+                if (!canReplace(tick.block.offset(0, -1, 0))) {
+                    tick.block.set("kubejs:light_spark", { "age": `${nowAge + 1}` })
+                }
+            }
         })
         .blockEntity(entity => {
             entity.tick(10, 5, function (callback) {
