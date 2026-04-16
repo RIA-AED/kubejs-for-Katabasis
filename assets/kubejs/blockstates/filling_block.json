@@ -4,12 +4,24 @@
       "model": "kubejs:block/filling_block"
     },
     "age=1": {
-      "model": "kubejs:block/filling_block_2"
+      "model": "kubejs:block/filling_block"
     },
     "age=2": {
-      "model": "kubejs:block/filling_block_3"
+      "model": "kubejs:block/filling_block"
     },
     "age=3": {
+      "model": "kubejs:block/filling_block"
+    },
+    "age=4": {
+      "model": "kubejs:block/filling_block"
+    },
+    "age=5": {
+      "model": "kubejs:block/filling_block_2"
+    },
+    "age=6": {
+      "model": "kubejs:block/filling_block_3"
+    },
+    "age=7": {
       "model": "kubejs:block/filling_block_4"
     }
   }

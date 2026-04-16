@@ -36,7 +36,7 @@ StartupEvents.registry('block', event => {
     event.create("filler_block_2").blockEntity(entity => { }).material('wool').hardness(0).resistance(10).noDrops().displayName("发泡方块(扩展型)")
     event.create("filling_block").randomTick(tick => {
         let nowAge = parseInt(tick.block.properties.age)
-        if (nowAge < 3) {
+        if (nowAge < 7) {
             if (Math.random() < 0.25) {
                 tick.block.set("kubejs:filling_block", { "age": `${nowAge + 1}` })
             }
@@ -46,7 +46,7 @@ StartupEvents.registry('block', event => {
         }
     })
         .suffocating(false)
-        .property(BlockProperties.AGE_3).material('wool').hardness(0).resistance(10).noDrops().displayName("发泡填充方块")
+        .property(BlockProperties.AGE_7).material('wool').hardness(0).resistance(10).noDrops().displayName("发泡填充方块")
 
     event.create("energy_transport_terminal")
         .defaultCutout()
@@ -154,7 +154,7 @@ StartupEvents.registry('item', event => {
     event.create("posthumous_papers").displayName("散乱的记述")
 
     event.create("copter")
-    .maxDamage(100)
-    .use((level, player, hand) => CopterItem.use(level, player, hand))
-    .displayName("竹蜻蜓")
+        .maxDamage(100)
+        .use((level, player, hand) => CopterItem.use(level, player, hand))
+        .displayName("竹蜻蜓")
 })
