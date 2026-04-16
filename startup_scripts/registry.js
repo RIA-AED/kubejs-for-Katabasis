@@ -48,6 +48,40 @@ StartupEvents.registry('block', event => {
         .suffocating(false)
         .property(BlockProperties.AGE_7).material('wool').hardness(0).resistance(10).noDrops().displayName("发泡填充方块")
 
+    event.create("light_spark")
+        .randomTick(tick => {
+            let nowAge = parseInt(tick.block.properties.age)
+            if (nowAge < 7 && nowAge != 0) {
+                if (Math.random() < 0.25) {
+                    tick.block.set("kubejs:light_spark", { "age": `${nowAge + 1}` })
+                }
+            }
+            if (nowAge == 7) {
+                tick.block.set("minecraft:air")
+            }
+        })
+        .blockEntity(entity => {
+            entity.tick(10, 5, function (callback) {
+                //callback.block.level.server.tell(callback.level.isDay())
+                let block = callback.block
+                let nowAge = parseInt(block.properties.age)
+                if (nowAge == 0) {
+                    if (canReplace(block.offset(0, -1, 0))) {
+                        block.offset(0, -1, 0).set("kubejs:light_spark")
+                        block.set("air")
+                    } else {
+                        block.set("kubejs:light_spark", { "age": `${nowAge + 1}` })
+                    }
+                }
+            })
+        })
+        .tagBlock("minecraft:replaceable")
+        .suffocating(false)
+        .defaultCutout()
+        .noCollision()
+        .lightLevel(18)
+        .property(BlockProperties.AGE_7).material('wool').hardness(0).resistance(-1).noDrops().displayName("照明火花")
+
     event.create("energy_transport_terminal")
         .defaultCutout()
         .property(BlockProperties.POWERED)
@@ -135,6 +169,7 @@ StartupEvents.registry('entity_type', event => {
 StartupEvents.registry('item', event => {
     event.create("cdu_drop").displayName("CDU空投")
     event.create("cannon_drop").displayName("机炮空投")
+    event.create("light_drop").displayName("照明空投")
 
     event.create("empty_cdu_drop").displayName("空的CDU空投")
     event.create("empty_cannon_drop").displayName("空的机炮空投")

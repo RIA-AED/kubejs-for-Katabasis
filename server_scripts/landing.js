@@ -26,6 +26,10 @@ BlockEvents.rightClicked("kubejs:drop_controller", event => {
             entity.tags.add("fill")
             spawned = true
         }
+        if (spawned == false && event.player.offHandItem.id != "create:cardboard" && event.player.mainHandItem.id == "kubejs:light_drop") {
+            entity.tags.add("light")
+            spawned = true
+        }
         if (spawned == false && event.player.offHandItem.id != "create:cardboard" && event.player.mainHandItem.id == "kubejs:cannon_drop") {
             entity.tags.add("cannon")
             spawned = true
@@ -208,7 +212,20 @@ function landingPodTick(entity, level, server) {
                             server.tell(e)
                         }
                     }
-
+                    if (entity.tags.contains("light")) {
+                        let count = 0
+                        let maxCount = 120
+                        let xRange = 60
+                        let yRange = 30
+                        let zRange = 60
+                        while (count < maxCount) {
+                            let block = entity.block.offset(randint(-1 * xRange, xRange), 10 + randint(0, yRange), randint(-1 * zRange, zRange))
+                            if (canReplace(block)) {
+                                block.set("kubejs:light_spark")
+                                count++
+                            }
+                        }
+                    }
 
                     server.scheduleInTicks(40, function (callback) {
                         entity.tags.add("dead")

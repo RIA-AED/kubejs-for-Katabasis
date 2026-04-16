@@ -25,9 +25,9 @@ BlockEvents.placed("kubejs:filler_block_2", event => {
     //event.player.tell(xList)
 })
 
-BlockEvents.rightClicked(event => {
-    if (event.block.hasTag("spore:removable_foliage")) event.player.tell(11)
-})
+// BlockEvents.rightClicked(event => {
+//     event.player.tell(event.block.level.isDay())
+// })
 
 global.fillingBlock =
     (
@@ -211,16 +211,4 @@ function getFacesAir(block) {
     if (canReplace(block.offset(-1, 0, 0))) r++
     if (canReplace(block.offset(0, 0, -1))) r++
     return r
-}
-
-/**
- * 检测目标位置是否可被替换（草、菌丝等）
- * @param {Internal.BlockContainerJS} block
- */
-function canReplace(block) {
-    if (block == "minecraft:air" || block.hasTag("replaceable") || block.hasTag("spore:removable_foliage") || block.hasTag("small_flowers")
-        || block.hasTag("immersive_weathering:small_mushrooms")) {
-        return true
-    }
-    return false
 }

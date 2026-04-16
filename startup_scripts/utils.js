@@ -19,3 +19,15 @@ function getDistance(a, b) {
     let dz = a.z() - b.z()
     return Math.sqrt(dx * dx + dy * dy + dz * dz)
 }
+
+/**
+ * 检测目标位置是否可被替换（草、菌丝等）
+ * @param {Internal.BlockContainerJS} block
+ */
+function canReplace(block) {
+    if (block == "minecraft:air" || block.hasTag("replaceable") || block.hasTag("spore:removable_foliage") || block.hasTag("small_flowers" || block.hasTag("immersive_weathering:leaf_piles"))
+        || block.hasTag("immersive_weathering:small_mushrooms")) {
+        return true
+    }
+    return false
+}
