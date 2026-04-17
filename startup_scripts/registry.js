@@ -11,7 +11,8 @@ StartupEvents.registry('block', event => {
         .defaultCutout()
 
         // 基础属性（可选，根据需求调整）
-        .material('metal')           // 金属材质（挖掘声音）
+        .soundType("METAL")         // 金属材质（挖掘声音）
+        .mapColor("METAL")
         .hardness(3)                // 硬度
         .resistance(6)              // 爆炸抗性
         .requiresTool(true)         // 需要工具挖掘
@@ -19,21 +20,21 @@ StartupEvents.registry('block', event => {
         .tagBlock('kubejs:drop_controller')      // 自定义标签，方便事件监听
         .displayName("空降控制台")
 
-    event.create("ship_core").defaultCutout().material('medal').tagBlock('minecraft:mineable/pickaxe')
+    event.create("ship_core").defaultCutout().soundType("METAL").mapColor("METAL").tagBlock('minecraft:mineable/pickaxe')
         .blockEntity(blockEntity => shipCore(blockEntity))
         .hardness(1)                // 硬度
         .resistance(20)              // 爆炸抗性
         .requiresTool(true)         // 需要工具挖掘
         .displayName("飞船核心")
-    event.create("base_core").defaultCutout().material('medal').tagBlock('minecraft:mineable/pickaxe')
+    event.create("base_core").defaultCutout().soundType("METAL").mapColor("METAL").tagBlock('minecraft:mineable/pickaxe')
         .blockEntity(entity => { })
         .hardness(-1)                // 硬度
         .resistance(20)              // 爆炸抗性
         .requiresTool(true)         // 需要工具挖掘
         .displayName("母舰核心")
 
-    event.create("filler_block_1").blockEntity(entity => { }).material('wool').hardness(0).resistance(10).noDrops().displayName("发泡方块(填补型)")
-    event.create("filler_block_2").blockEntity(entity => { }).material('wool').hardness(0).resistance(10).noDrops().displayName("发泡方块(扩展型)")
+    event.create("filler_block_1").blockEntity(entity => { }).soundType("WOOL").mapColor("SAND").hardness(0).resistance(10).noDrops().displayName("发泡方块(填补型)")
+    event.create("filler_block_2").blockEntity(entity => { }).soundType("WOOL").mapColor("SAND").hardness(0).resistance(10).noDrops().displayName("发泡方块(扩展型)")
     event.create("filling_block").randomTick(tick => {
         let nowAge = parseInt(tick.block.properties.age)
         if (nowAge < 7) {
@@ -46,7 +47,7 @@ StartupEvents.registry('block', event => {
         }
     })
         .suffocating(false)
-        .property(BlockProperties.AGE_7).material('wool').hardness(0).resistance(10).noDrops().displayName("发泡填充方块")
+        .property(BlockProperties.AGE_7).soundType("WOOL").mapColor("SAND").hardness(0).resistance(10).noDrops().displayName("发泡填充方块")
 
     event.create("light_spark")
         .randomTick(tick => {
@@ -85,14 +86,16 @@ StartupEvents.registry('block', event => {
         .defaultCutout()
         .noCollision()
         .lightLevel(18)
-        .property(BlockProperties.AGE_7).material('wool').hardness(0).resistance(-1).noDrops().displayName("照明火花")
+        .property(BlockProperties.AGE_7).soundType("WOOL").hardness(0).resistance(-1).noDrops().displayName("照明火花")
 
     event.create("energy_transport_terminal")
         .defaultCutout()
+        .mapColor("COLOR_YELLOW")
+        .soundType("METAL")
         .property(BlockProperties.POWERED)
-        .defaultState(state => EnergyTransportTerminalBlock.defaultState(state))
-        .rightClick(event => EnergyTransportTerminalBlock.rightClick(event))
-        .blockEntity(info => EnergyTransportTerminalBlock.blockEntity(info))
+        .defaultState(EnergyTransportTerminalBlock.defaultState)
+        .rightClick(EnergyTransportTerminalBlock.rightClick)
+        .blockEntity(EnergyTransportTerminalBlock.blockEntity)
         .displayName("能量传输终端")
 })
 
