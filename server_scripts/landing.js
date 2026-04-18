@@ -110,7 +110,7 @@ function landingPodTick(entity, level, server) {
         if (entity.block.y < 256) {
             if (entity.persistentData.isFinalFalling == false) {
                 try {
-                    for (let offset = 1; offset <= 20; offset++) {
+                    for (let offset = 1; offset <= global.config.LandingPod.podFinalFallingHeight; offset++) {
                         if (entity.block.offset(0, -offset, 0) != "minecraft:air") {
                             entity.persistentData.isFinalFalling = true
                             entity.persistentData.putString('state', 'landing')
