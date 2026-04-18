@@ -120,6 +120,15 @@ function landingPodTick(entity, level, server) {
                             //server.runCommandSilent(`execute as @e[type=]playsound createbigcannons:lava_fluid_release ambient @a ${entity.x} ${entity.y} ${entity.z} 1 0.7 1`)
                             break
                         }
+                        if (entity.onGround() || entity.isInWater()) {
+                            entity.persistentData.isFinalFalling = true
+                            entity.persistentData.putString('state', 'landing')
+                            entity.triggerAnimation('main', 'landing')
+                            entity.potionEffects.add("minecraft:slow_falling", 1000, 2, true, false)
+                            entity.playSound("createbigcannons:lava_fluid_release", 1, 1)
+                            //server.runCommandSilent(`execute as @e[type=]playsound createbigcannons:lava_fluid_release ambient @a ${entity.x} ${entity.y} ${entity.z} 1 0.7 1`)
+                            break
+                        }
                     }
                 } catch (e) {
                     server.tell(e)
@@ -148,8 +157,7 @@ function landingPodTick(entity, level, server) {
                     3, 0.05
                 )
 
-
-                if (entity.onGround()) {
+                if (entity.onGround() || entity.isInWater()) {
                     entity.persistentData.putString('state', 'break')
                     entity.mergeNbt("{CustomNameVisible:0b}")
                     entity.setCustomNameVisible(false)
