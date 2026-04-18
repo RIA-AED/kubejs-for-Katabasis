@@ -1,0 +1,23 @@
+{
+	"credit": "Made with Blockbench",
+	"texture_size": [32, 32],
+	"textures": {
+		"0": "fractionandspore:block/flag_banner",
+		"particle": "fractionandspore:block/flag_banner"
+	},
+	"elements": [
+		{
+			"from": [-0.5, 3, 1],
+			"to": [0.5, 13, 15],
+			"rotation": {"angle": 0, "axis": "y", "origin": [-0.5, 3, 1]},
+			"faces": {
+				"north": {"uv": [7, 7, 7.5, 12], "texture": "#0"},
+				"east": {"uv": [0, 7, 7, 12], "texture": "#0"},
+				"south": {"uv": [14.5, 7, 15, 12], "texture": "#0"},
+				"west": {"uv": [7.5, 7, 14.5, 12], "texture": "#0"},
+				"up": {"uv": [7.5, 7, 7, 0], "texture": "#0"},
+				"down": {"uv": [8, 0, 7.5, 7], "texture": "#0"}
+			}
+		}
+	]
+}
