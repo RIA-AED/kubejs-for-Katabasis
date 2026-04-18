@@ -7,3 +7,7 @@ ServerEvents.loaded(event => {
         })
     })
 })
+
+EntityEvents.spawned("minecraft:item",event=>{
+    event.server.tell("11")
+})
