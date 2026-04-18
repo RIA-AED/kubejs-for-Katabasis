@@ -8,6 +8,13 @@ let config = {
         "maxStoredEnergy": 10000,
         "energyPerRequest": 10000,
         "maxDistance": 5
+    },
+    "LandingPod": {
+        "podFinalFallingHeight": 20
+    },
+    "ItemClean": {
+        "item_clean_interval_tick": 500,
+        "item_clean_waitfortick": 60
     }
 }
 

@@ -10,9 +10,7 @@ CopterItem.use =
         if (level.clientSide) return true
         let { server, block } = player
         let itemInHand = player.getItemInHand(hand)
-
-        server.runCommandSilent(`execute at @a[name=${player}] run effect give @a[name=${player}] minecraft:slow_falling 10 0 false`)
-        server.runCommandSilent(`execute at @a[name=${player}] run particle cloud ${block.x} ${block.y} ${block.z} 1 1 1 0.25 200 normal`)
+        
         player.addItemCooldown(itemInHand, 100)
         player.damageHeldItem(hand, 1)
         player.addMotion(0, 1.5, 0)
