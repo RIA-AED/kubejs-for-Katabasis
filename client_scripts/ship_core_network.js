@@ -24,7 +24,7 @@ ClientEvents.tick(event => {
     }
     global.shipCoreInfo = {
         energy: energy,
-        distance: distance,
+        distance: Math.ceil(distance*100)/100,
         connected: connected,
         maxRange: maxRange,
         lastUpdate: Date.now()
