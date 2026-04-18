@@ -24,12 +24,12 @@ BlockEvents.rightClicked("kubejs:ship_core", event => {
 
     blockEntity.data.energy = energy
     blockEntity.setChanged()
-    blockEntity.sendData()
+    level.sendBlockUpdated(block.pos, blockEntity.blockState, blockEntity.blockState, 3)
 })
 
 BlockEvents.placed("kubejs:base_core", event => {
     let base = event.server.persistentData.base_core_pos
-    if (base && !base.x && !base.y && !base.z && event.level.getBlock(new BlockPos(base.x, base.y, base.z)).id === "kubejs:base_core") {
+    if (base && event.level.getBlock(new BlockPos(base.x, base.y, base.z)).id === "kubejs:base_core") {
         event.player.tell("世界内已存在 base_core 了")
         event.cancel()
     } else if (!VSHelper.isBlockInShipyard(event.level, event.block.pos)) {
@@ -55,6 +55,11 @@ BlockEvents.broken("kubejs:base_core", event => {
 })
 
 BlockEvents.placed("kubejs:ship_core", event => {
+    if (!VSHelper.isBlockInShipyard(event.level, event.block.pos)){
+        event.player.tell("该位置不是船舶")
+        event.cancel()
+        return
+    }
     let blockEntity = event.level.getBlockEntity(event.block.pos)
     blockEntity.data.energy = 0
 })

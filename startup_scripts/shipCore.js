@@ -56,7 +56,8 @@ function shipCore(blockEntity) {
             }
         } finally {
             entity.setChanged()
-            entity.sendData()
+            let blockPos = entity.blockPos
+            entity.level.sendBlockUpdated(blockPos, entity.blockState, entity.blockState, 3)
         }
     })
 }
