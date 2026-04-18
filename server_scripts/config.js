@@ -13,9 +13,8 @@ let config = {
         "podFinalFallingHeight": 20
     },
     "ItemClean": {
-        "max_item_size": 500,
-        "item_clean_waitfortick": 60,
-        "item_clean_size": 10000
+        "item_clean_interval_tick": 500,
+        "item_clean_waitfortick": 60
     }
 }
 
