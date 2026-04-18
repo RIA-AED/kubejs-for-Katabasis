@@ -357,4 +357,43 @@ ServerEvents.recipes(event => {
         D: 'protection_pixel:leggingslining',F: 'minecraft:iron_ingot',
         G: 'spore:tendons',I:'spore:armor_plate',J:'spore:hardened_bind'
     })
+
+    //破碎锤胸甲
+    event.remove({output:Item.of('protection_pixel:breaker_chestplate', '{Damage:0}')})
+    event.recipes.create.mechanical_crafting(Item.of('protection_pixel:breaker_chestplate', '{Damage:0}'), [
+        " AJA ",
+        "ADBGA",
+        "HIEIH",
+        "AFJFA"
+    ], {
+        A: 'create:brass_sheet',B: 'spore:nerves',
+        D:'spore:mutated_heart',E:'protection_pixel:chestplatelining',F:'spore:tendons',
+        G:'spore:alveolic_sack',H:'spore:fleshy_claw',I:'spore:living_core',J:'spore:spine'
+    })
+
+    //棱翼胸甲
+    event.remove({output:Item.of('protection_pixel:wingsofprism_chestplate', '{Damage:0}')})
+    event.recipes.create.mechanical_crafting(Item.of('protection_pixel:wingsofprism_chestplate', '{Damage:0}'), [
+        " AJA ",
+        "ADBGA",
+        "HIEIH",
+        "AFJFA"
+    ], {
+        A: 'create:brass_sheet',B: 'spore:nerves',
+        D:'spore:mutated_heart',E:'protection_pixel:chestplatelining',F:'spore:tendons',
+        G:'spore:alveolic_sack',H:'spore:fleshy_claw',I:'minecraft:sea_lantern',J:'spore:spine'
+    })
+
+    //工蜂胸甲
+    event.remove({output:Item.of('protection_pixel:wingsofprism_chestplate', '{Damage:0}')})
+    event.recipes.create.mechanical_crafting(Item.of('protection_pixel:wingsofprism_chestplate', '{Damage:0}'), [
+        " AJA ",
+        "ADBGA",
+        "HIEIH",
+        "AFJFA"
+    ], {
+        A: 'create:brass_sheet',B: 'spore:nerves',
+        D:'spore:mutated_heart',E:'protection_pixel:chestplatelining',F:'spore:tendons',
+        G:'spore:alveolic_sack',H:'spore:fleshy_claw',I:'minecraft:sea_lantern',J:'spore:spine'
+    })
 })
