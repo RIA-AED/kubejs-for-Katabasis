@@ -56,6 +56,7 @@ function shipCore(blockEntity) {
             }
         } finally {
             entity.setChanged()
+            entity.sendData()
         }
     })
 }

@@ -24,6 +24,7 @@ BlockEvents.rightClicked("kubejs:ship_core", event => {
 
     blockEntity.data.energy = energy
     blockEntity.setChanged()
+    blockEntity.sendData()
 })
 
 BlockEvents.placed("kubejs:base_core", event => {
