@@ -13,7 +13,7 @@ let config = {
         "podFinalFallingHeight": 20
     },
     "ItemClean": {
-        "item_clean_interval_tick": 500,
+        "item_clean_interval_tick": 2400,
         "item_clean_waitfortick": 60
     }
 }
