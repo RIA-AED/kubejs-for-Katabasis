@@ -9,7 +9,7 @@ ServerEvents.loaded(event=>{
  * @param {Number} min
  * @param {Number} max
 */
-function randint(max, min) {
+function randint(min, max) {
     return Math.floor(Math.random() * (max - min + 1)) + min;
 }
 
