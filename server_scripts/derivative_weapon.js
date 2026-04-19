@@ -98,7 +98,7 @@ EntityEvents.hurt(event => {//折射
     let player = event.getSource().getPlayer()
     if (!player) return
     if (player.mainHandItem.id != 'pointblank:refraction_dila') return
-    event.entity.potionEffects.add('minecraft:instant_damage', 1, 2)
+    event.entity.potionEffects.add('minecraft:instant_damage', 1, 1)
 })
 
 EntityEvents.hurt(event => {//黑镜

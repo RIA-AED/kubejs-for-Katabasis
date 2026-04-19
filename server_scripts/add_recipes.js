@@ -221,11 +221,11 @@ ServerEvents.recipes(event => {
         " ABA ",
         "CFEFC",
         "HDGDH",
-        "AIJIA"
+        "AIZIA"
     ], {
         A: 'create:brass_sheet',B: 'create:brass_ingot',C: 'create:iron_sheet',
         F:'create:propeller',G:Item.of('minecraft:iron_helmet', '{Damage:0}'),D:'quark:framed_glass_pane',
-        E:'spore:altered_spleen',H:'spore:fleshy_bone',I:'spore:plated_muscle',J:'spore:spine_fragment'
+        E:'spore:altered_spleen',H:'spore:fleshy_bone',I:'spore:plated_muscle',Z: 'create:precision_mechanism'
     })
 
     //枪骑兵头盔
@@ -234,11 +234,11 @@ ServerEvents.recipes(event => {
         " ABA ",
         "AFGFA",
         "HDEDH",
-        "AIJIA"
+        "AIZIA"
     ], {
         A: 'create:brass_sheet',B: 'create:brass_ingot',
         D:'quark:framed_glass_pane',E:Item.of('minecraft:iron_helmet', '{Damage:0}'),F:'spore:tendons',
-        G:'create:cogwheel',H:'spore:fleshy_bone',I:'spore:plated_muscle',J:'spore:spine_fragment'
+        G:'create:cogwheel',H:'spore:fleshy_bone',I:'spore:plated_muscle',Z: 'create:precision_mechanism'
     })
 
     //锤头头盔
@@ -247,11 +247,11 @@ ServerEvents.recipes(event => {
         " ABA ",
         "AFFFA",
         "HDEDH",
-        "AIJIA"
+        "AIZIA"
     ], {
         A: 'create:brass_sheet',B: 'create:brass_ingot',
         D:'quark:framed_glass_pane',E:Item.of('minecraft:iron_helmet', '{Damage:0}'),F:'spore:armor_plate',
-        H:'spore:fleshy_bone',I:'spore:plated_muscle',J:'spore:spine_fragment'
+        H:'spore:fleshy_bone',I:'spore:plated_muscle',Z: 'create:precision_mechanism'
     })
 
     //捕猎者头盔
@@ -260,11 +260,11 @@ ServerEvents.recipes(event => {
         "CA AC",
         " JBJ ",
         "HDEGH",
-        "AIJIA"
+        "AIZIA"
     ], {
         A: 'create:brass_sheet',B: 'create:brass_ingot',C: 'createaddition:electrum_wire',
         D: 'spore:vigil_eye',E: 'minecraft:iron_helmet',
-        G:'spore:nerves',H:'spore:fleshy_bone',I:'spore:plated_muscle',J:'spore:spine_fragment'
+        G:'spore:nerves',H:'spore:fleshy_bone',I:'spore:plated_muscle',J:'spore:spine_fragment',Z: 'create:precision_mechanism'
     })
 
     //全封闭头盔
@@ -273,11 +273,11 @@ ServerEvents.recipes(event => {
         " DDD ",
         "DCBCD",
         "AJEJA",
-        "AIJIA"
+        "AIZIA"
     ], {
         A: 'create:brass_sheet',B: 'create:brass_ingot',C: 'spore:alveolic_sack',
         D: 'minecraft:glass_pane',E: 'minecraft:iron_helmet',
-        I:'spore:plated_muscle',J:'spore:spine_fragment'
+        I:'spore:plated_muscle',J:'spore:spine_fragment',Z: 'create:precision_mechanism'
     })
 
     //血囚头盔
@@ -286,11 +286,11 @@ ServerEvents.recipes(event => {
         " ABA ",
         "FADAF",
         "HGEGH",
-        "AIJIA"
+        "AIZIA"
     ], {
         A: 'create:brass_sheet',B: 'create:brass_ingot',
         D: 'quark:framed_glass_pane',E: 'minecraft:iron_helmet',F: 'kinetic_pixel:andesitealloycompressionsheet',
-        G: 'spore:mutated_heart',I:'spore:plated_muscle',J:'spore:spine_fragment',H: 'spore:fleshy_bone'
+        G: 'spore:mutated_heart',I:'spore:plated_muscle',Z: 'create:precision_mechanism',H: 'spore:fleshy_bone'
     })
 
     //托萨奇头盔
@@ -299,11 +299,11 @@ ServerEvents.recipes(event => {
         " ABA ",
         "FADAF",
         "HCEGH",
-        "AIJIA"
+        "AIZIA"
     ], {
         A: 'protection_pixel:heatresistantceramicsheet',B: 'minecraft:iron_ingot',C:'quark:black_framed_glass_pane',
         D: 'spore:nerves',E: 'minecraft:iron_helmet',F: 'kinetic_pixel:andesitealloycompressionsheet',
-        G: Item.of('spore:vigil_eye', '{Damage:0}'),I:'spore:plated_muscle',J:'spore:spine_fragment',H: 'spore:fleshy_bone'
+        G: Item.of('spore:vigil_eye', '{Damage:0}'),I:'spore:plated_muscle',Z: 'create:precision_mechanism',H: 'spore:fleshy_bone'
     })
 
     //弹弓腿甲
@@ -314,7 +314,7 @@ ServerEvents.recipes(event => {
         "GG GG",
         "AI IA"
     ], {
-        A: 'create:brass_sheet',B: 'spore:spine_fragment',
+        A: 'create:brass_sheet',B: 'create:precision_mechanism',
         D: 'protection_pixel:leggingslining',F: 'create:brass_ingot',
         G: 'spore:tendons',I:'spore:armor_plate',J:'spore:hardened_bind'
     })
@@ -327,7 +327,7 @@ ServerEvents.recipes(event => {
         "AG GA",
         "CI IC"
     ], {
-        A: 'create:brass_sheet',B: 'spore:spine_fragment',C:'spore:spike',
+        A: 'create:brass_sheet',B: 'create:precision_mechanism',C:'spore:spike',
         D: 'protection_pixel:leggingslining',F: 'create:brass_ingot',
         G: 'spore:plated_muscle',I:'spore:armor_plate',J:'spore:hardened_bind'
     })
@@ -340,7 +340,7 @@ ServerEvents.recipes(event => {
         "IG GI",
         "AC CA"
     ], {
-        A: 'create:brass_sheet',B: 'spore:spine_fragment',C:'spore:wing_membrane',
+        A: 'create:brass_sheet',B: 'create:precision_mechanism',C:'spore:wing_membrane',
         D: 'protection_pixel:leggingslining',F: 'create:brass_ingot',
         G: 'create:propeller',I:'spore:alveolic_sack',J:'spore:hardened_bind'
     })
@@ -353,7 +353,7 @@ ServerEvents.recipes(event => {
         "AG GA",
         "CI IC"
     ], {
-        A: 'protection_pixel:heatresistantceramicsheet',B: 'spore:spine_fragment',C:'spore:wing_membrane',
+        A: 'protection_pixel:heatresistantceramicsheet',B: 'create:precision_mechanism',C:'spore:wing_membrane',
         D: 'protection_pixel:leggingslining',F: 'minecraft:iron_ingot',
         G: 'spore:tendons',I:'spore:armor_plate',J:'spore:hardened_bind'
     })
@@ -366,7 +366,7 @@ ServerEvents.recipes(event => {
         "HIEIH",
         "AFJFA"
     ], {
-        A: 'create:brass_sheet',B: 'spore:nerves',
+        A: 'create:brass_sheet',B: 'create:precision_mechanism',
         D:'spore:mutated_heart',E:'protection_pixel:chestplatelining',F:'spore:tendons',
         G:'spore:alveolic_sack',H:'spore:fleshy_claw',I:'spore:living_core',J:'spore:spine'
     })
@@ -379,21 +379,60 @@ ServerEvents.recipes(event => {
         "HIEIH",
         "AFJFA"
     ], {
-        A: 'create:brass_sheet',B: 'spore:nerves',
+        A: 'create:brass_sheet',B: 'create:precision_mechanism',
         D:'spore:mutated_heart',E:'protection_pixel:chestplatelining',F:'spore:tendons',
         G:'spore:alveolic_sack',H:'spore:fleshy_claw',I:'minecraft:sea_lantern',J:'spore:spine'
     })
 
     //工蜂胸甲
-    event.remove({output:Item.of('protection_pixel:wingsofprism_chestplate', '{Damage:0}')})
-    event.recipes.create.mechanical_crafting(Item.of('protection_pixel:wingsofprism_chestplate', '{Damage:0}'), [
+    event.remove({output:Item.of('protection_pixel:workerhornet_chestplate', '{Damage:0}')})
+    event.recipes.create.mechanical_crafting(Item.of('protection_pixel:workerhornet_chestplate', '{Damage:0}'), [
+        " AJA ",
+        "ADBGA",
+        "HIEKH",
+        "AFJFA"
+    ], {
+        A: 'create:brass_sheet',B: 'create:precision_mechanism',
+        D:'spore:mutated_heart',E:'protection_pixel:chestplatelining',F:'spore:tendons',
+        G:'spore:alveolic_sack',H:'spore:fleshy_claw',I:'immersive_aircraft:eco_engine',J:'spore:spine',K: Item.of('create:extendo_grip', '{Damage:0}')
+    })
+
+    //磁暴胸甲
+    event.remove({output:Item.of('protection_pixel:magneticstorm_chestplate', '{Damage:0}')})
+    event.recipes.create.mechanical_crafting(Item.of('protection_pixel:magneticstorm_chestplate', '{Damage:0}'), [
+        " AJA ",
+        "ADGBA",
+        "HIEIH",
+        "AFJFA"
+    ], {
+        A: 'create:brass_sheet',B: 'create:precision_mechanism',
+        D:'spore:mutated_heart',E:'protection_pixel:chestplatelining',F:'spore:tendons',
+        G:'createaddition:tesla_coil',H:'spore:fleshy_claw',I:'createaddition:capacitor',J:'spore:spine'
+    })
+
+    //先驱胸甲
+    event.remove({output:Item.of('protection_pixel:pioneer_chestplate', '{Damage:0}')})
+    event.recipes.create.mechanical_crafting(Item.of('protection_pixel:pioneer_chestplate', '{Damage:0}'), [
         " AJA ",
         "ADBGA",
         "HIEIH",
         "AFJFA"
     ], {
-        A: 'create:brass_sheet',B: 'spore:nerves',
+        A: 'create:brass_sheet',B: 'create:precision_mechanism',
         D:'spore:mutated_heart',E:'protection_pixel:chestplatelining',F:'spore:tendons',
-        G:'spore:alveolic_sack',H:'spore:fleshy_claw',I:'minecraft:sea_lantern',J:'spore:spine'
+        G:'spore:combat_pickaxe',H:'spore:fleshy_claw',I:'spore:fleshy_bone',J:'spore:spine'
+    })
+
+    //地狱蛇胸甲
+    event.remove({output:Item.of('protection_pixel:hellsnake_chestplate', '{Damage:0}')})
+    event.recipes.create.mechanical_crafting(Item.of('protection_pixel:hellsnake_chestplate', '{Damage:0}'), [
+        " AJA ",
+        "ADGBA",
+        "HIEIH",
+        "AFJFA"
+    ], {
+        A: 'create:brass_sheet',B: 'create:precision_mechanism',
+        D:'spore:mutated_heart',E:'protection_pixel:chestplatelining',F:'create:portable_fluid_interface',
+        G:'immersive_aircraft:eco_engine',H:'spore:fleshy_claw',I:'create:mechanical_pump',J:'spore:spine'
     })
 })
