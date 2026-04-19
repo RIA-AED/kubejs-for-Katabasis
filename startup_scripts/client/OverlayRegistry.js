@@ -20,5 +20,11 @@ if (Platform.isClientEnvironment()) {
             (gui, guiGraphics, partialTick, screenWidth, screenHeight) =>
                 global.ammo_info_overlay(gui, guiGraphics, partialTick, screenWidth, screenHeight)
         )
+
+        event.registerAboveAll(
+            "objective_status_overlay",
+            (gui, guiGraphics, partialTick, screenWidth, screenHeight) =>
+                global.objective_status_overlay(gui, guiGraphics, partialTick, screenWidth, screenHeight)
+        )
     })
 }

@@ -4,6 +4,7 @@ if (Platform.isClientEnvironment()) {
     let $GunItem = Java.loadClass("com.vicmatskiv.pointblank.item.GunItem")
     let $Item = Java.loadClass("net.minecraft.world.item.Item")
     let $ItemStack = Java.loadClass("net.minecraft.world.item.ItemStack")
+    let $Axis = Java.loadClass("com.mojang.math.Axis")
 
     let $GunItem$isCompatibleBullet = Java.class.forName("com.vicmatskiv.pointblank.item.GunItem")
         .getDeclaredMethod("isCompatibleBullet", $Item, $ItemStack, $FireModeInstance)
@@ -13,7 +14,8 @@ if (Platform.isClientEnvironment()) {
     global.guiErrorLogged = {
         armourInfo: false,
         shipCore: false,
-        ammoInfo: false
+        ammoInfo: false,
+        objectiveStatus: false
     }
 
     // 存储当前显示的核心信息
@@ -261,7 +263,7 @@ if (Platform.isClientEnvironment()) {
             let fireModeInstance = $GunItem.getFireModeInstance(gunStack)
             let maxCapacity = gunItem.getMaxAmmoCapacity(gunStack, fireModeInstance)
             let currentAmmo = $GunItem.getAmmo(gunStack, fireModeInstance)
-            
+
             let ammoInfo = gunItem.getCompatibleAmmo().map(item => {
                 return {
                     id: item.id,
@@ -324,6 +326,125 @@ if (Platform.isClientEnvironment()) {
                 console.error("Stacktrace: " + e.stack)
 
                 global.guiErrorLogged.ammoInfo = true
+
+                if (Client.player) {
+                    Client.player.tell(Text.red("GUI 渲染发生异常，请检查控制台日志！"))
+                }
+            }
+        }
+    }
+
+    // 任务信息Overlay
+    global.objective_status_overlay = (
+        /** @type {Internal.ForgeGui} */ gui,
+        /** @type {GuiGraphics} */ guiGraphics,
+        partialTick,
+        screenWidth,
+        screenHeight
+    ) => {
+        try {
+            if (!guiGraphics) return
+            let player = Client.player
+            if (!player) return
+            let objData = global.currentObjectiveData
+            if (!objData || !objData.active) return
+
+            let font = gui.getFont()
+            let poseStack = guiGraphics.pose()
+            let drawStringFloat = "drawString(net.minecraft.client.gui.Font,java.lang.String,float,float,int,boolean)"
+
+            let rightMargin = 20
+            let bottomMargin = 60 // 避开物品栏
+            let xBase = screenWidth - rightMargin
+            let yBase = screenHeight - bottomMargin
+
+            // --- 1. 状态映射逻辑 ---
+            let statusText = objData.status
+            let statusColor = 0xFFFFFFFF // 默认白色
+            let targetPos = objData.targetPos
+            if (targetPos != null)
+                targetPos = BlockPos.of(targetPos)
+
+            let statusMap = {
+                'WAITING': { text: "前往目标点", color: 0xFFAAAAAA }, // 灰色
+                'READY': { text: "准备就绪", color: 0xFF55FF55 }, // 绿色
+                'ACTIVE': { text: "完成任务目标……尽量吧", color: 0xFFFFFFFF }, // 白色
+                'COMPLETED': { text: "任务完成", color: 0xFFFFFF55 }, // 黄色
+                'FAILED': { text: "任务失败", color: 0xFFFF5555 } // 红色
+            }
+
+            if (objData.isCooldown) {
+                statusColor = 0xFFAAAAAA
+            } else if (objData.status && statusMap[objData.status]) {
+                let config = statusMap[objData.status]
+                statusColor = config.color | 0
+
+                // 如果是 WAITING 状态，额外计算距离
+                if (objData.status == 'WAITING' && objData.targetPos) {
+                    let dx = targetPos.x - player.x
+                    let dz = targetPos.z - player.z
+                    let dist = Math.sqrt(dx * dx + dz * dz).toFixed(0)
+                    statusText = `${config.text}: ${dist}m`
+                } else {
+                    statusText = config.text
+                }
+            }
+
+            // --- 2. 准备渲染数据 ---
+            let titleText = objData.name
+            let titleWidth = font.width(titleText)
+            let statusWidth = font.width(statusText)
+            let maxTextWidth = Math.max(titleWidth, statusWidth)
+
+            // --- 3. 渲染旋转图标 ---
+            let arrowStack = Item.of("minecraft:arrow")
+
+            if (targetPos != null && !objData.isCooldown) {
+                let dx = targetPos.x - player.x
+                let dz = targetPos.z - player.z
+
+                // 计算平滑旋转角度
+                let targetAngle = Math.atan2(dz, dx) * (180 / KMath.PI) - 90
+                let playerYaw = Mth.lerp(partialTick, player.yRotO, player.YRot)
+                let finalAngle = targetAngle - playerYaw
+
+                poseStack.pushPose()
+                poseStack.translate(xBase - 8, yBase - 2, 0)
+                // 额外 -45 度是因为箭头的默认贴图是斜着的
+                poseStack.mulPose($Axis.ZP.rotationDegrees(finalAngle - 45))
+                guiGraphics.renderFakeItem(arrowStack, -8, -8)
+                poseStack.popPose()
+            } else {
+                // 冷却中或无坐标显示静止图标
+                let icon = objData.isCooldown ? Item.of("minecraft:clock") : arrowStack
+                guiGraphics.renderFakeItem(icon, xBase - 16, yBase - 10)
+            }
+
+            // --- 4. 渲染文字 (右对齐) ---
+            // 标题 (任务名)
+            guiGraphics[drawStringFloat](font, titleText, xBase - 25 - titleWidth, yBase - 12, 0xFFFF5555 | 0, true)
+            // 状态文字 (颜色动态)
+            guiGraphics[drawStringFloat](font, statusText, xBase - 25 - statusWidth, yBase, statusColor | 0, true)
+
+            // --- 5. 渲染进度条 ---
+            let barWidth = maxTextWidth + 5
+            let barHeight = 2
+            let barX = xBase - 25 - barWidth
+            let barY = yBase + 12
+
+            guiGraphics.fill(barX, barY, barX + barWidth, barY + barHeight, 0x88000000 | 0)
+            let barColor = objData.isCooldown ? 0xFFAAAAAA : (statusColor == 0xFFFFFFFF ? 0xFFFF4466 : statusColor)
+            let currentBarWidth = barWidth * Math.max(0, Math.min(1, objData.percent))
+
+            // 从右往左填充进度条 (符合视觉直觉)
+            guiGraphics.fill(barX + (barWidth - currentBarWidth), barY, barX + barWidth, barY + barHeight, barColor | 0)
+        } catch (e) {
+            if (!global.guiErrorLogged.objectiveStatus) {
+                console.error("Critical error in GUI Overlay rendering!")
+                console.error("Error details: " + e)
+                console.error("Stacktrace: " + e.stack)
+
+                global.guiErrorLogged.objectiveStatus = true
 
                 if (Client.player) {
                     Client.player.tell(Text.red("GUI 渲染发生异常，请检查控制台日志！"))
