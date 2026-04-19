@@ -5,6 +5,9 @@ if (Platform.isClientEnvironment()) {
     let $Item = Java.loadClass("net.minecraft.world.item.Item")
     let $ItemStack = Java.loadClass("net.minecraft.world.item.ItemStack")
     let $Axis = Java.loadClass("com.mojang.math.Axis")
+    let $RenderSystem = Java.loadClass("com.mojang.blaze3d.systems.RenderSystem")
+    let $Vector4f = Java.loadClass("org.joml.Vector4f")
+    let $Matrix4f = Java.loadClass("org.joml.Matrix4f")
 
     let $GunItem$isCompatibleBullet = Java.class.forName("com.vicmatskiv.pointblank.item.GunItem")
         .getDeclaredMethod("isCompatibleBullet", $Item, $ItemStack, $FireModeInstance)
@@ -400,6 +403,79 @@ if (Platform.isClientEnvironment()) {
             let arrowStack = Item.of("minecraft:arrow")
 
             if (targetPos != null && !objData.isCooldown) {
+                let camera = Client.gameRenderer.mainCamera
+                let camPos = camera.position
+                let window = Client.window
+                let physWidth = window.width
+                let physHeight = window.height
+                let aspectRatio = physWidth / physHeight
+                let guiScale = window.guiScale || 1
+
+                // 1. 计算相对位置
+                let pTick = partialTick
+                let mX = (targetPos.x + 0.5) - Mth.lerp(pTick, player.xOld, player.x)
+                let mY = (targetPos.y + 0.5) - Mth.lerp(pTick, player.yOld, player.y)
+                let mZ = (targetPos.z + 0.5) - Mth.lerp(pTick, player.zOld, player.z)
+
+                // 2. 构建矩阵
+                let viewMatrix = new $Matrix4f().identity()
+                viewMatrix.rotate($Axis.XP.rotationDegrees(camera.XRot))
+                viewMatrix.rotate($Axis.YP.rotationDegrees(camera.YRot + 180.0))
+
+                let fov = Client.options.fov().get()
+                let projectionMatrix = new $Matrix4f().perspective(
+                    fov * (KMath.PI / 180.0),
+                    aspectRatio,
+                    0.05,
+                    2000.0
+                )
+
+                // 3. 变换坐标
+                let posVec = new $Vector4f(mX, mY, mZ, 1.0)
+                posVec.mul(viewMatrix)
+                posVec.mul(projectionMatrix)
+
+                // --- 关键点：边缘限制处理 ---
+                let dist = Math.sqrt(mX * mX + mY * mY + mZ * mZ).toFixed(1)
+                let distText = `${dist}m`
+                let textWidth = font.width(distText)
+
+                // 基础 GUI 坐标（物理转 GUI）
+                let rawGuiX = (posVec.x / posVec.w + 1) * (physWidth / 2) / guiScale
+                let rawGuiY = (1 - posVec.y / posVec.w) * (physHeight / 2) / guiScale
+
+                let renderX, renderY
+                let padding = 15 // 距离边缘的像素
+
+                // 如果目标在玩家身后 (w < 0) 或者 超出屏幕范围
+                if (posVec.w <= 0) {
+                    renderX = (rawGuiX > screenWidth / 2) ? screenWidth - padding : padding
+                    renderY = screenHeight - padding
+                } else {
+                    renderX = Math.max(padding, Math.min(screenWidth - padding, rawGuiX))
+                    renderY = Math.max(padding, Math.min(screenHeight - padding, rawGuiY))
+                }
+
+                // 4. 执行渲染
+                poseStack.pushPose()
+                poseStack.translate(0, 0, 800)
+
+                // 绘制红色方块
+                guiGraphics.fill(renderX - 2, renderY - 2, renderX + 2, renderY + 2, 0xFFFF0000 | 0)
+                guiGraphics.renderOutline(renderX - 3, renderY - 3, 6, 6, 0xFFFFFFFF | 0)
+
+                // 绘制距离文字（动态调整文字位置防止出界）
+                let textX = renderX - (textWidth / 2)
+                let textY = renderY + 5
+
+                // 修正文字出界
+                textX = Math.max(2, Math.min(screenWidth - textWidth - 2, textX))
+                if (textY > screenHeight - 12) textY = renderY - 12 // 如果太靠下，文字改到方块上方
+
+                guiGraphics[drawStringFloat](font, distText, textX, textY, 0xFFFFFFFF | 0, true)
+
+                poseStack.popPose()
+
                 let dx = targetPos.x - player.x
                 let dz = targetPos.z - player.z
 
@@ -422,6 +498,8 @@ if (Platform.isClientEnvironment()) {
 
             // --- 4. 渲染文字 (右对齐) ---
             // 标题 (任务名)
+            poseStack.pushPose()
+            poseStack.translate(0, 0, 50)
             guiGraphics[drawStringFloat](font, titleText, xBase - 25 - titleWidth, yBase - 12, 0xFFFF5555 | 0, true)
             // 状态文字 (颜色动态)
             guiGraphics[drawStringFloat](font, statusText, xBase - 25 - statusWidth, yBase, statusColor | 0, true)
@@ -438,6 +516,7 @@ if (Platform.isClientEnvironment()) {
 
             // 从右往左填充进度条 (符合视觉直觉)
             guiGraphics.fill(barX + (barWidth - currentBarWidth), barY, barX + barWidth, barY + barHeight, barColor | 0)
+            poseStack.popPose()
         } catch (e) {
             if (!global.guiErrorLogged.objectiveStatus) {
                 console.error("Critical error in GUI Overlay rendering!")
