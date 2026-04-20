@@ -38,3 +38,27 @@ function canReplace(block) {
 }
 
 global.playsound = (server, block, soundId, maxVolum, pitch) => playsound(server, block, soundId, maxVolum, pitch)
+
+/**
+ * 获取枪支伤害
+ * @param item {Internal.ItemStack}
+ * @return {float}
+ */
+function getGunDamage(item) {
+    let damage
+    try {
+        damage = item.getItem().getDamage()
+    } catch (e) {
+        damage = 0.0
+    }
+    return damage
+}
+
+ServerEvents.commandRegistry(event => {
+    const Commands = event.commands
+    event.register(Commands.literal('getDamage')
+        .executes(ctx => {
+            ctx.source.player.tell(getGunDamage(ctx.source.player.mainHandItem))
+        })
+    )
+})
