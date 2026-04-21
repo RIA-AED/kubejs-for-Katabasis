@@ -555,6 +555,8 @@ if (Platform.isClientEnvironment()) {
             let physWidth = window.width
             let physHeight = window.height
             let aspectRatio = physWidth / physHeight
+            let config = global.teammate_info_command_config
+            if (config == "off") return
 
             // 遍历世界中的所有玩家
             for (let name in global.teammatesData) {
@@ -564,7 +566,7 @@ if (Platform.isClientEnvironment()) {
                 if (distSq > 200 * 200) return
 
                 // 逻辑过滤：如果他在队伍里，或者你想显示所有人
-                if (!data.isMate) continue
+                if (!data.isMate && config == "onlyteam") continue
 
                 // 计算渲染坐标
                 let rx, ry, rz
