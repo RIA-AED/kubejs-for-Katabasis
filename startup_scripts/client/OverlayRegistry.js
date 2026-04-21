@@ -26,5 +26,11 @@ if (Platform.isClientEnvironment()) {
             (gui, guiGraphics, partialTick, screenWidth, screenHeight) =>
                 global.objective_status_overlay(gui, guiGraphics, partialTick, screenWidth, screenHeight)
         )
+
+        event.registerAboveAll(
+            "teammates_info_overlay",
+            (gui, guiGraphics, partialTick, screenWidth, screenHeight) =>
+                global.teammates_info_overlay(gui, guiGraphics, partialTick, screenWidth, screenHeight)
+        )
     })
 }
