@@ -60,7 +60,7 @@ EntityEvents.hurt(event => {
 
 
 midArmorList.forEach(it => {
-    EntityEvents.spawned(it,event => {
+    EntityEvents.spawned(it, event => {
         event.entity.addTag("midArmor")
     })
 })
