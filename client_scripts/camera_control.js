@@ -4,6 +4,7 @@ let cameraStatus = "normal"
 NetworkEvents.dataReceived("cam_control", event => {
 
     cameraStatus = event.data.get("status")
+    let options = Client.options
     switch (cameraStatus) {
         case ("first"):
             options.setCameraType($CameraType.FIRST_PERSON)
@@ -25,7 +26,7 @@ NetworkEvents.dataReceived("cam_control", event => {
 //         if (!player) return
 //         if (cameraStatus == "normal") return
 
-//         let options = Client.options
+//
 
 
 //     } catch (e) {

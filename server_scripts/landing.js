@@ -106,6 +106,11 @@ function landingPodTick(entity, level, server) {
         if (!entity.persistentData.contains("isFinalFalling")) {
             entity.persistentData.isFinalFalling = false
         }
+        if (entity.tags.contains("player") && entity.passengers.empty) {
+            entity.tags.add("dead")
+            server.runCommandSilent("execute as @e[tag=dead] at @s run tp @s ~ -200 ~")
+            return
+        }
 
         if (entity.block.y < 256) {
             if (entity.persistentData.isFinalFalling == false) {
@@ -167,9 +172,9 @@ function landingPodTick(entity, level, server) {
                         it.unRide()
                         if (it.type == "minecraft:player") {
                             it.sendData('cam_control', { status: "first" })
-                            server.scheduleInTicks(2, function (callback) {
-                                it.sendData('cam_control', { status: "normal" })
-                            })
+                            // server.scheduleInTicks(2, function (callback) {
+                            //     it.sendData('cam_control', { status: "normal" })
+                            // })
                         }
                     })
                     let explosion = entity.block.createExplosion()
