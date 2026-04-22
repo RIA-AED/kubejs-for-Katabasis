@@ -106,10 +106,20 @@ function landingPodTick(entity, level, server) {
         if (!entity.persistentData.contains("isFinalFalling")) {
             entity.persistentData.isFinalFalling = false
         }
-        if (entity.tags.contains("player") && entity.passengers.empty) {
-            entity.tags.add("dead")
-            server.runCommandSilent("execute as @e[tag=dead] at @s run tp @s ~ -200 ~")
-            return
+        if (entity.tags.contains("player")) {
+            if (entity.passengers.empty) {
+                entity.tags.add("dead")
+                server.runCommandSilent("execute as @e[tag=dead] at @s run tp @s ~ -200 ~")
+                return
+            }
+            else {
+                entity.getPassengers().forEach(it => {
+                    if (it.type == "minecraft:player") {
+                        let name = it.name.getString()
+                        server.runCommandSilent(`effect give ${name} minecraft:resistance 4 4 true`)
+                    }
+                })
+            }
         }
 
         if (entity.block.y < 256) {
