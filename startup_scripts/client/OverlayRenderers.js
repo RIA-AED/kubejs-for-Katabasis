@@ -18,7 +18,8 @@ if (Platform.isClientEnvironment()) {
         armourInfo: false,
         shipCore: false,
         ammoInfo: false,
-        objectiveStatus: false
+        objectiveStatus: false,
+        teammatesInfo: false
     }
 
     // 存储当前显示的核心信息
@@ -524,6 +525,115 @@ if (Platform.isClientEnvironment()) {
                 console.error("Stacktrace: " + e.stack)
 
                 global.guiErrorLogged.objectiveStatus = true
+
+                if (Client.player) {
+                    Client.player.tell(Text.red("GUI 渲染发生异常，请检查控制台日志！"))
+                }
+            }
+        }
+    }
+
+    // 队友名牌Overlay
+    global.teammates_info_overlay = (
+        /** @type {Internal.ForgeGui} */ gui,
+        /** @type {GuiGraphics} */ guiGraphics,
+        partialTick,
+        screenWidth,
+        screenHeight
+    ) => {
+        try {
+            if (!guiGraphics) return
+            let { player, level, window, gameRenderer } = Client
+            if (!player || !level) return
+
+            let font = gui.getFont()
+            let poseStack = guiGraphics.pose()
+            let drawStringFloat = "drawString(net.minecraft.client.gui.Font,java.lang.String,float,float,int,boolean)"
+
+            let camera = gameRenderer.mainCamera
+            let guiScale = window.guiScale || 1
+            let physWidth = window.width
+            let physHeight = window.height
+            let aspectRatio = physWidth / physHeight
+            let config = global.teammate_info_command_config
+            if (config == "off") return
+
+            // 遍历世界中的所有玩家
+            for (let name in global.teammatesData) {
+                let data = global.teammatesData[name]
+
+                let distSq = Math.pow(player.x - data.x, 2) + Math.pow(player.y - data.y, 2) + Math.pow(player.z - data.z, 2)
+                if (distSq > 200 * 200) return
+
+                // 逻辑过滤：如果他在队伍里，或者你想显示所有人
+                if (!data.isMate && config == "onlyteam") continue
+
+                // 计算渲染坐标
+                let rx, ry, rz
+                if (data.isLocal && data.actualEntity) {
+                    // 如果是本地实体，使用平滑插值（partialTick）
+                    rx = Mth.lerp(partialTick, data.actualEntity.xOld, data.actualEntity.x)
+                    ry = Mth.lerp(partialTick, data.actualEntity.yOld, data.actualEntity.y) + data.actualEntity.eyeHeight + 0.5
+                    rz = Mth.lerp(partialTick, data.actualEntity.zOld, data.actualEntity.z)
+                } else {
+                    // 如果是远端数据，直接用坐标
+                    rx = data.x
+                    ry = data.y + 1.0
+                    rz = data.z
+                }
+
+                // --- 坐标投影逻辑 ---
+                let pTick = partialTick
+                // 计算目标在世界中的平滑插值位置 (加上玩家身高，显示在头顶)
+                let mX = rx - Mth.lerp(pTick, player.xOld, player.x)
+                let mY = ry - Mth.lerp(pTick, player.yOld, player.y)
+                let mZ = rz - Mth.lerp(pTick, player.zOld, player.z)
+
+                // 构建视图和投影矩阵
+                let viewMatrix = new $Matrix4f().identity()
+                viewMatrix.rotate($Axis.XP.rotationDegrees(camera.XRot))
+                viewMatrix.rotate($Axis.YP.rotationDegrees(camera.YRot + 180.0))
+
+                let fov = Client.options.fov().get()
+                let projectionMatrix = new $Matrix4f().perspective(fov * (KMath.PI / 180.0), aspectRatio, 0.05, 2000.0)
+
+                let posVec = new $Vector4f(mX, mY, mZ, 1.0)
+                posVec.mul(viewMatrix)
+                posVec.mul(projectionMatrix)
+
+                // 只有在相机前方时才渲染
+                if (posVec.w > 0) {
+                    let guiX = (posVec.x() / posVec.w() + 1) * (physWidth / 2) / guiScale
+                    let guiY = (1 - posVec.y / posVec.w) * (physHeight / 2) / guiScale
+
+                    // 限制在屏幕内
+                    if (guiX >= 0 && guiX <= screenWidth && guiY >= 0 && guiY <= screenHeight) {
+                        let nameText = name
+                        let distText = `${Math.sqrt(distSq).toFixed(1)}m`
+                        let text = `${nameText} (${distText})`
+                        let textWidth = font.width(text)
+                        let color = data.isLocal ? 0xFFFFFF : 0xAAAAAA
+
+                        poseStack.pushPose()
+                        poseStack.translate(guiX, guiY, 0)
+                        poseStack.scale(0.5, 0.5, 0.5)
+
+                        // 简单的背景框
+                        guiGraphics.fill(-(textWidth / 2) - 2, -2, (textWidth / 2) + 2, 10, 0x66000000 | 0)
+                        // 绘制名字
+                        guiGraphics[drawStringFloat](font, text, -(textWidth / 2), 0, color, true)
+
+                        poseStack.popPose()
+                    }
+                }
+            }
+        } catch (e) {
+            if (!global.guiErrorLogged.teammatesInfo) {
+                console.error("Critical error in GUI Overlay rendering!")
+                console.error("Error details: " + e)
+                console.error("Stacktrace: " + e.stack)
+
+                global.guiErrorLogged.teammatesInfo = true
 
                 if (Client.player) {
                     Client.player.tell(Text.red("GUI 渲染发生异常，请检查控制台日志！"))
