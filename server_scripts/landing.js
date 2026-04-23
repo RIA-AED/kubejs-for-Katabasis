@@ -112,7 +112,7 @@ function landingPodTick(entity, level, server) {
         try {
             if (entity.noGravity) {
                 let block = level.getBlock(entity.persistentData.posX, entity.persistentData.posY, entity.persistentData.posZ)
-                server.tell(entity.persistentData.posX)
+                //server.tell(entity.persistentData.posX)
                 let ship = VSHelper.getShipByBlockPos(level, block.pos)
                 if (ship != null) {
                     let pos = VSHelper.shipBlockPosToWorldVec3(ship, block.pos)
