@@ -11,6 +11,9 @@ BlockEvents.rightClicked("kubejs:drop_controller", event => {
         let entity = event.level.createEntity("kubejs:landing_pod")
         entity.setPos(pos.x(), pos.y() - 0.5, pos.z())
         entity.mergeNbt("{CustomNameVisible:0b}")
+        entity.persistentData.posX = event.block.pos.x
+        entity.persistentData.posY = event.block.pos.y
+        entity.persistentData.posZ = event.block.pos.z
         entity.potionEffects.add("minecraft:resistance", 1000, 4, true, false)
         let freezeTime = 20
         let spawned = false
@@ -106,6 +109,21 @@ function landingPodTick(entity, level, server) {
         if (!entity.persistentData.contains("isFinalFalling")) {
             entity.persistentData.isFinalFalling = false
         }
+        try {
+            if (entity.noGravity) {
+                let block = level.getBlock(entity.persistentData.posX, entity.persistentData.posY, entity.persistentData.posZ)
+                server.tell(entity.persistentData.posX)
+                let ship = VSHelper.getShipByBlockPos(level, block.pos)
+                if (ship != null) {
+                    let pos = VSHelper.shipBlockPosToWorldVec3(ship, block.pos)
+                    if (getDistance(entity.block.pos.x, entity.block.pos.y, entity.block.pos.z, pos.x(), pos.y(), pos.z()) > 1.5)
+                        entity.teleportTo(pos.x(), pos.y() - 0.5, pos.z())
+                }
+            }
+        } catch (e) {
+            server.tell(e)
+        }
+
         if (entity.tags.contains("player")) {
             if (entity.passengers.empty) {
                 entity.tags.add("dead")
@@ -122,7 +140,7 @@ function landingPodTick(entity, level, server) {
             }
         }
 
-        if (entity.block.y < 256) {
+        if (entity.noGravity == false && entity.block.y < 256) {
             if (entity.persistentData.isFinalFalling == false) {
                 try {
                     for (let offset = 1; offset <= global.config.LandingPod.podFinalFallingHeight; offset++) {
