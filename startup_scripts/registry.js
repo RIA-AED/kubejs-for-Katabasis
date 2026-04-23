@@ -97,6 +97,25 @@ StartupEvents.registry('block', event => {
         .rightClick(EnergyTransportTerminalBlock.rightClick)
         .blockEntity(EnergyTransportTerminalBlock.blockEntity)
         .displayName("能量传输终端")
+
+    event.create("return_block")
+        .defaultCutout()
+        .soundType("METAL")
+        .noDrops()
+        .blockEntity(entity => {
+            entity.tick(10, 4, callback => {
+                if(!callback.block.entity.persistentData.contains("timer"))
+                    callback.block.entity.persistentData.timer = 0
+                else{
+                    callback.block.entity.persistentData.timer += 10
+                }
+                if (callback.block.entity.persistentData.timer >= global.config.ReturnBlock.return_block_lastTick){
+                    callback.block.set("minecraft:air")
+                }
+            })
+        })
+        .property(BlockProperties.AGE_4)
+        .displayName("回传方块")
 })
 
 StartupEvents.registry('entity_type', event => {
