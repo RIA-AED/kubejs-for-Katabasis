@@ -77,7 +77,7 @@ function playerLandingPodInit(player, level, server) {
         server.scheduleInTicks(timer, function (callback) {
             player.setStatusMessage(item)
         })
-        timer += randint(3, 6)
+        timer += 2
     });
     server.scheduleInTicks(timer, function (callback) {
         server.runCommandSilent(`title ${player.name.getString()} subtitle [{"text":"${pod_log.subtitles[randint(0, pod_log.subtitles.length - 1)]}","color":"white"}]`)
