@@ -198,6 +198,7 @@ StartupEvents.registry('item', event => {
     event.create("cdu_drop").displayName("CDU空投")
     event.create("cannon_drop").displayName("机炮空投")
     event.create("light_drop").displayName("照明空投")
+    event.create("return_drop").displayName("回传空投")
 
     event.create("empty_cdu_drop").displayName("空的CDU空投")
     event.create("empty_cannon_drop").displayName("空的机炮空投")

@@ -25,8 +25,8 @@ BlockEvents.rightClicked("kubejs:drop_controller", event => {
             entity.tags.add("cdu")
             spawned = true
         }
-        if (spawned == false && event.player.offHandItem.id != "create:cardboard" && event.player.mainHandItem.id == "kubejs:fill_drop") {
-            entity.tags.add("fill")
+        if (spawned == false && event.player.offHandItem.id != "create:cardboard" && event.player.mainHandItem.id == "kubejs:return_drop") {
+            entity.tags.add("return")
             spawned = true
         }
         if (spawned == false && event.player.offHandItem.id != "create:cardboard" && event.player.mainHandItem.id == "kubejs:light_drop") {
@@ -266,6 +266,9 @@ function landingPodTick(entity, level, server) {
                                 count++
                             }
                         }
+                    }
+                    if (entity.tags.contains("return")) {
+                        entity.block.set("kubejs:return_block")
                     }
 
                     server.scheduleInTicks(40, function (callback) {
