@@ -104,16 +104,17 @@ StartupEvents.registry('block', event => {
         .noDrops()
         .blockEntity(entity => {
             entity.tick(10, 4, callback => {
-                if(!callback.block.entity.persistentData.contains("timer"))
+                if (!callback.block.entity.persistentData.contains("timer"))
                     callback.block.entity.persistentData.timer = 0
-                else{
+                else {
                     callback.block.entity.persistentData.timer += 10
                 }
-                if (callback.block.entity.persistentData.timer >= global.config.ReturnBlock.return_block_lastTick){
+                if (callback.block.entity.persistentData.timer >= global.config.ReturnBlock.return_block_lastTick) {
                     callback.block.set("minecraft:air")
                 }
             })
         })
+        .lightLevel(18)
         .property(BlockProperties.AGE_4)
         .displayName("回传方块")
 })
