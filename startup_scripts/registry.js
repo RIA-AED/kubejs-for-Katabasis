@@ -187,10 +187,12 @@ StartupEvents.registry('entity_type', event => {
 
     event.create("filler_1", "entityjs:projectile")
         .item(builder => FillerProjectileEntity.item(builder, 1))
+        .textureLocation(entity => 'kubejs:textures/entity/filler_1.png')
         .onHitBlock(context => FillerProjectileEntity.onHitBlock(context, 1))
 
     event.create("filler_2", "entityjs:projectile")
         .item(builder => FillerProjectileEntity.item(builder, 2))
+        .textureLocation(entity => 'kubejs:textures/entity/filler_2.png')
         .onHitBlock(context => FillerProjectileEntity.onHitBlock(context, 2))
 })
 
