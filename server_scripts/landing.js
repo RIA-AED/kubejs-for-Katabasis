@@ -37,6 +37,14 @@ BlockEvents.rightClicked("kubejs:drop_controller", event => {
             entity.tags.add("cannon")
             spawned = true
         }
+        if (spawned == false && event.player.offHandItem.id != "create:cardboard" && event.player.mainHandItem.id == "kubejs:leveller_drop") {
+            entity.tags.add("leveller")
+            spawned = true
+        }
+        if (spawned == false && event.player.offHandItem.id != "create:cardboard" && event.player.mainHandItem.id == "kubejs:guard_drop") {
+            entity.tags.add("guard")
+            spawned = true
+        }
         if (spawned == false) {
             entity.tags.add("player")
             event.player.sendData('cam_control', { status: "first" })
@@ -269,6 +277,12 @@ function landingPodTick(entity, level, server) {
                     }
                     if (entity.tags.contains("return")) {
                         entity.block.set("kubejs:return_block")
+                    }
+                    if (entity.tags.contains("leveller")) {
+                        SporePlusApi.placeSupplyRack(level, entity.block, Item.of('pointblank:cr_leveller', '{GeckoLibID:62L,aim:0b,ammo:1,ammox:{},fmid:[I;1185645641,-1632421030,-1154921073,429101538],lid:-6968655897147236967L,mid:5058018963645678663L,sa:{scope:"/"},seed:990201902015293984L}'), '4x pointblank:warhammer')
+                    }
+                    if (entity.tags.contains("guard")) {
+                        SporePlusApi.placeSupplyRack(level, entity.block, Item.of('pointblank:x_guard_1', '{GeckoLibID:71L,aim:0b,ammo:10,ammox:{},fmid:[I;2133113564,78526763,-1253530715,594025078],lid:-7683552585953384301L,mid:3696545583663632311L,sa:{scope:"/"},seed:-4728271792698087507L}'), '20x pointblank:blackglass')
                     }
 
                     server.scheduleInTicks(40, function (callback) {
