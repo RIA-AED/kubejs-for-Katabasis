@@ -26,6 +26,19 @@ function playsound(server, block, soundId, maxVolum, pitch) {
 }
 
 /**
+ * 获取两个坐标之间距离
+ * @param {Number} posAX
+ * @param {Number} posAY
+ * @param {Number} posAZ
+ * @param {Number} posBX
+ * @param {Number} posBY
+ * @param {Number} posBZ
+ */
+function getDistance(posAX, posAY, posAZ, posBX, posBY, posBZ) {
+    return Math.sqrt(Math.pow(posAX - posBX, 2) + Math.pow(posAY - posBY, 2) + Math.pow(posAZ - posBZ, 2))
+}
+
+/**
  * 发声（仅限单玩家）
  * @param {Internal.MinecraftServer} server
  * @param {Internal.BlockContainerJS} block

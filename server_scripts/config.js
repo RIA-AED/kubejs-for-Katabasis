@@ -15,6 +15,9 @@ let config = {
     "ItemClean": {
         "item_clean_interval_tick": 2400,
         "item_clean_waitfortick": 60
+    },
+    "ReturnBlock":{
+        "return_block_lastTick": 6000,
     }
 }
 

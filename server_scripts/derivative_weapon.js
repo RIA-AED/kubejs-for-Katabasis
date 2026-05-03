@@ -94,18 +94,12 @@ EntityEvents.hurt(event => {//星爆
     if (player.mainHandItem.id != 'pointblank:x_guard_1') return
     event.entity.potionEffects.add('minecraft:instant_damage', 1, 1)
 })
+
 EntityEvents.hurt(event => {//折射
     let player = event.getSource().getPlayer()
     if (!player) return
-    if (player.mainHandItem.id != 'pointblank:x_dila_1') return
-    event.entity.potionEffects.add('minecraft:instant_damage', 1, 1)
-})
-
-EntityEvents.hurt(event => {//黑镜
-    let player = event.getSource().getPlayer()
-    if (!player) return
     if (player.mainHandItem.id != 'pointblank:cr_meteor_fist_1'
-        && player.mainHandItem.id != 'pointblank:x_pulse_1'
+        && player.mainHandItem.id != 'pointblank:x_dila_1'
     ) return
     if (getRandomInt() > 50) return
      event.entity.potionEffects.add('fractionandspore:chaos', 60, 18)

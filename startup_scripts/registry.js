@@ -97,6 +97,26 @@ StartupEvents.registry('block', event => {
         .rightClick(EnergyTransportTerminalBlock.rightClick)
         .blockEntity(EnergyTransportTerminalBlock.blockEntity)
         .displayName("能量传输终端")
+
+    event.create("return_block")
+        .defaultCutout()
+        .soundType("METAL")
+        .noDrops()
+        .blockEntity(entity => {
+            entity.tick(10, 4, callback => {
+                if (!callback.block.entity.persistentData.contains("timer"))
+                    callback.block.entity.persistentData.timer = 0
+                else {
+                    callback.block.entity.persistentData.timer += 10
+                }
+                if (callback.block.entity.persistentData.timer >= global.config.ReturnBlock.return_block_lastTick) {
+                    callback.block.set("minecraft:air")
+                }
+            })
+        })
+        .lightLevel(18)
+        .property(BlockProperties.AGE_4)
+        .displayName("回传方块")
 })
 
 StartupEvents.registry('entity_type', event => {
@@ -167,10 +187,12 @@ StartupEvents.registry('entity_type', event => {
 
     event.create("filler_1", "entityjs:projectile")
         .item(builder => FillerProjectileEntity.item(builder, 1))
+        .textureLocation(entity => 'kubejs:textures/entity/filler_1.png')
         .onHitBlock(context => FillerProjectileEntity.onHitBlock(context, 1))
 
     event.create("filler_2", "entityjs:projectile")
         .item(builder => FillerProjectileEntity.item(builder, 2))
+        .textureLocation(entity => 'kubejs:textures/entity/filler_2.png')
         .onHitBlock(context => FillerProjectileEntity.onHitBlock(context, 2))
 })
 
@@ -178,6 +200,9 @@ StartupEvents.registry('item', event => {
     event.create("cdu_drop").displayName("CDU空投")
     event.create("cannon_drop").displayName("机炮空投")
     event.create("light_drop").displayName("照明空投")
+    event.create("return_drop").displayName("回传空投")
+    event.create("leveller_drop").displayName("荡平者空投")
+    event.create("guard_drop").displayName("星爆空投")
 
     event.create("empty_cdu_drop").displayName("空的CDU空投")
     event.create("empty_cannon_drop").displayName("空的机炮空投")

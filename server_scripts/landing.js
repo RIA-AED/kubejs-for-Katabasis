@@ -11,6 +11,9 @@ BlockEvents.rightClicked("kubejs:drop_controller", event => {
         let entity = event.level.createEntity("kubejs:landing_pod")
         entity.setPos(pos.x(), pos.y() - 0.5, pos.z())
         entity.mergeNbt("{CustomNameVisible:0b}")
+        entity.persistentData.posX = event.block.pos.x
+        entity.persistentData.posY = event.block.pos.y
+        entity.persistentData.posZ = event.block.pos.z
         entity.potionEffects.add("minecraft:resistance", 1000, 4, true, false)
         let freezeTime = 20
         let spawned = false
@@ -22,8 +25,8 @@ BlockEvents.rightClicked("kubejs:drop_controller", event => {
             entity.tags.add("cdu")
             spawned = true
         }
-        if (spawned == false && event.player.offHandItem.id != "create:cardboard" && event.player.mainHandItem.id == "kubejs:fill_drop") {
-            entity.tags.add("fill")
+        if (spawned == false && event.player.offHandItem.id != "create:cardboard" && event.player.mainHandItem.id == "kubejs:return_drop") {
+            entity.tags.add("return")
             spawned = true
         }
         if (spawned == false && event.player.offHandItem.id != "create:cardboard" && event.player.mainHandItem.id == "kubejs:light_drop") {
@@ -32,6 +35,14 @@ BlockEvents.rightClicked("kubejs:drop_controller", event => {
         }
         if (spawned == false && event.player.offHandItem.id != "create:cardboard" && event.player.mainHandItem.id == "kubejs:cannon_drop") {
             entity.tags.add("cannon")
+            spawned = true
+        }
+        if (spawned == false && event.player.offHandItem.id != "create:cardboard" && event.player.mainHandItem.id == "kubejs:leveller_drop") {
+            entity.tags.add("leveller")
+            spawned = true
+        }
+        if (spawned == false && event.player.offHandItem.id != "create:cardboard" && event.player.mainHandItem.id == "kubejs:guard_drop") {
+            entity.tags.add("guard")
             spawned = true
         }
         if (spawned == false) {
@@ -77,7 +88,7 @@ function playerLandingPodInit(player, level, server) {
         server.scheduleInTicks(timer, function (callback) {
             player.setStatusMessage(item)
         })
-        timer += randint(3, 6)
+        timer += 2
     });
     server.scheduleInTicks(timer, function (callback) {
         server.runCommandSilent(`title ${player.name.getString()} subtitle [{"text":"${pod_log.subtitles[randint(0, pod_log.subtitles.length - 1)]}","color":"white"}]`)
@@ -106,6 +117,21 @@ function landingPodTick(entity, level, server) {
         if (!entity.persistentData.contains("isFinalFalling")) {
             entity.persistentData.isFinalFalling = false
         }
+        try {
+            if (entity.noGravity) {
+                let block = level.getBlock(entity.persistentData.posX, entity.persistentData.posY, entity.persistentData.posZ)
+                //server.tell(entity.persistentData.posX)
+                let ship = VSHelper.getShipByBlockPos(level, block.pos)
+                if (ship != null) {
+                    let pos = VSHelper.shipBlockPosToWorldVec3(ship, block.pos)
+                    if (getDistance(entity.block.pos.x, entity.block.pos.y, entity.block.pos.z, pos.x(), pos.y(), pos.z()) > 1.5)
+                        entity.teleportTo(pos.x(), pos.y() - 0.5, pos.z())
+                }
+            }
+        } catch (e) {
+            server.tell(e)
+        }
+
         if (entity.tags.contains("player")) {
             if (entity.passengers.empty) {
                 entity.tags.add("dead")
@@ -122,7 +148,7 @@ function landingPodTick(entity, level, server) {
             }
         }
 
-        if (entity.block.y < 256) {
+        if (entity.noGravity == false && entity.block.y < 256) {
             if (entity.persistentData.isFinalFalling == false) {
                 try {
                     for (let offset = 1; offset <= global.config.LandingPod.podFinalFallingHeight; offset++) {
@@ -248,6 +274,15 @@ function landingPodTick(entity, level, server) {
                                 count++
                             }
                         }
+                    }
+                    if (entity.tags.contains("return")) {
+                        entity.block.set("kubejs:return_block")
+                    }
+                    if (entity.tags.contains("leveller")) {
+                        SporePlusApi.placeSupplyRack(level, entity.block, Item.of('pointblank:cr_leveller', '{GeckoLibID:62L,aim:0b,ammo:1,ammox:{},fmid:[I;1185645641,-1632421030,-1154921073,429101538],lid:-6968655897147236967L,mid:5058018963645678663L,sa:{scope:"/"},seed:990201902015293984L}'), '4x pointblank:warhammer')
+                    }
+                    if (entity.tags.contains("guard")) {
+                        SporePlusApi.placeSupplyRack(level, entity.block, Item.of('pointblank:x_guard_1', '{GeckoLibID:71L,aim:0b,ammo:10,ammox:{},fmid:[I;2133113564,78526763,-1253530715,594025078],lid:-7683552585953384301L,mid:3696545583663632311L,sa:{scope:"/"},seed:-4728271792698087507L}'), '20x pointblank:blackglass')
                     }
 
                     server.scheduleInTicks(40, function (callback) {
