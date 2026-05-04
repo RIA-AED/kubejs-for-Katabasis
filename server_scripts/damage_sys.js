@@ -3,12 +3,12 @@ let armorTypeDivide = [40, 100]
 
 let damageTypeDivide = [4.5, 9]
 
-let midDamageList = 
-    ['pointblank:cr_flea','pointblank:cr_flea_1',
-     'pointblank:cr_sar','pointblank:cr_sar_1',
-     'pointblank:st_snake_strike',
-     'pointblank:cr_demeanour',
-     'pointblank:e_prism'
+let midDamageList =
+    [
+        'pointblank:st_snake_strike',
+        'pointblank:st_rasword',
+        'pointblank:cr_demeanour',
+        'pointblank:e_prism'
     ]
 
 let midArmorList = ["spore:sieger"]
