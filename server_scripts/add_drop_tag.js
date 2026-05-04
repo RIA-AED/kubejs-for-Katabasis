@@ -77,3 +77,18 @@ ServerEvents.tags('item', event => {
         }
     });
 });
+
+// 定义特殊武器列表
+let specialWeapons = [
+    'pointblank:cr_leveller',
+    'pointblank:x_guard_1',
+    'pointblank:warhammer',
+    'pointblank:blackglass'
+];
+
+// 使用 KubeJS 的 ServerEvents.tags 来创建/修改物品标签
+ServerEvents.tags('item', event => {
+    specialWeapons.forEach(itemId => {
+        event.add('drop_on_extraction', itemId);
+    });
+});
