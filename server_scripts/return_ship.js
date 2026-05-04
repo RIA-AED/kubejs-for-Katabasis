@@ -32,9 +32,7 @@ BlockEvents.rightClicked("kubejs:return_block", event => {
                     event.player.setStatusMessage("你选定的回传方块不在飞艇上！")
                     return
                 }
-                let pos = VSHelper.shipBlockPosToWorldVec3(ship, block.offset(x, y, z).pos)
-                if (event.level.getBlock(pos.x(), pos.y(), pos.z()) != "minecraft:air") continue
-                if (event.level.getBlock(pos.x(), pos.y() + 1, pos.z()) != "minecraft:air") continue
+                let pos = VSHelper.shipBlockPosToWorldVec3(ship, block.offset(x, y, z).pos)u
                 event.player.teleportTo(pos.x(), pos.y(), pos.z())
                 event.player.setStatusMessage("已返回飞艇！")
                 teleported = true
