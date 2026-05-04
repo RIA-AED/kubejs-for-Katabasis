@@ -89,6 +89,6 @@ let specialWeapons = [
 // 使用 KubeJS 的 ServerEvents.tags 来创建/修改物品标签
 ServerEvents.tags('item', event => {
     specialWeapons.forEach(itemId => {
-        event.add('drop_on_extraction', itemId);
+        event.add('fractionandspore:destroy_on_extraction', itemId);
     });
 });
